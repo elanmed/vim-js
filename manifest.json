@@ -26,8 +26,8 @@
         "default": "Ctrl+D"
       },
       "description": "Scroll down by a half-page"
-    }
-    "scroll-down": {
+    },
+    "scroll-up": {
       "suggested_key": {
         "default": "Ctrl+U"
       },
