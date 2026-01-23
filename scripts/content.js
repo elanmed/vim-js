@@ -1,3 +1,4 @@
+let activeToasts = [];
 let firstKey = null;
 
 const twoKeyKeymaps = ["gg", "yy"];
@@ -66,5 +67,32 @@ function handleTwoKeyKeymap(event, firstKey) {
       });
       break;
     }
+    case "yy": {
+      navigator.clipboard.writeText(window.location.href);
+      addToast("URL copied");
+    }
   }
+}
+
+/**
+ * @param {string} message
+ */
+function addToast(message) {
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.style.cssText = `position:fixed;bottom:${20 + activeToasts.length * 60}px;right:20px;background:black;color:white;padding:12px;border-radius:4px;z-index:999999;`;
+  document.body.appendChild(toast);
+  activeToasts.push(toast);
+
+  setTimeout(() => {
+    const toastIndex = activeToasts.indexOf(toast);
+    if (toastIndex === -1) return;
+
+    activeToasts.splice(toastIndex, 1);
+    toast.remove();
+
+    activeToasts.forEach((toast, index) => {
+      toast.style.bottom = `${20 + index * 60}px`;
+    });
+  }, 2000);
 }
