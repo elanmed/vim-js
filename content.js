@@ -51,6 +51,10 @@ function handleSingleKeyKeymap(event) {
       });
       break;
     }
+    case "h": {
+      chrome.runtime.sendMessage({ action: "switchToPrevTab" });
+      break;
+    }
   }
 }
 
