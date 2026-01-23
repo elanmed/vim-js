@@ -3,18 +3,10 @@
   "description": "A minimalist vimium",
   "version": "0.0.1",
   "manifest_version": 3,
-  "action": {
-    "default_popup": "hello.html",
-    "default_icon": "images/hello_extensions.png"
-  },
   "content_scripts": [
     {
       "js": ["scripts/content.js"],
       "matches": ["https://*/*", "http://*/*"]
     }
-  ],
-  "background": {
-    "service_worker": "background/service-worker.js",
-    "type": "module"
-  }
+  ]
 }
