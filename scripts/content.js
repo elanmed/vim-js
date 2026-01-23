@@ -3,9 +3,20 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
-  if (event.key === "j") {
-    window.scrollBy(0, 100);
-  } else if (event.key === "k") {
-    window.scrollBy(0, -100);
+  switch (event.key) {
+    case "j": {
+      window.scrollBy({
+        behavior: "smooth",
+        top: Math.floor(window.innerHeight / 2),
+      });
+      break;
+    }
+    case "k": {
+      window.scrollBy({
+        behavior: "smooth",
+        top: -Math.floor(window.innerHeight / 2),
+      });
+      break;
+    }
   }
 });
