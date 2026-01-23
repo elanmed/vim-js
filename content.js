@@ -30,29 +30,11 @@ document.addEventListener("keydown", (event) => {
  */
 function handleSingleKeyKeymap(event) {
   switch (event.key) {
-    case "j": {
-      window.scrollBy({
-        behavior: "smooth",
-        top: Math.floor(window.innerHeight / 2),
-      });
-      break;
-    }
-    case "k": {
-      window.scrollBy({
-        behavior: "smooth",
-        top: -Math.floor(window.innerHeight / 2),
-      });
-      break;
-    }
     case "G": {
       window.scrollBy({
         behavior: "instant",
         top: document.documentElement.scrollHeight,
       });
-      break;
-    }
-    case "h": {
-      chrome.runtime.sendMessage({ action: "switchToPrevTab" });
       break;
     }
   }
