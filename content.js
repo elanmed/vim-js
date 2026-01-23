@@ -31,16 +31,7 @@ document.addEventListener("keydown", (event) => {
  */
 function handleSingleKeyKeymap(event) {
   switch (event.key) {
-    case "l": {
-      chrome.runtime.sendMessage({ action: "switchToRightTab" });
-      break;
-    }
-    case "h": {
-      chrome.runtime.sendMessage({ action: "switchToLeftTab" });
-      break;
-    }
     case "H": {
-      console.log("]T");
       chrome.runtime.sendMessage({ action: "switchToFirstTab" });
       break;
     }

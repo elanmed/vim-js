@@ -8,28 +8,6 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   switch (request.action) {
-    case "switchToRightTab": {
-      chrome.tabs.query({ currentWindow: true }, (tabs) => {
-        const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
-        const rightIdx = (() => {
-          if (currIdx === tabs.length - 1) return 0;
-          return currIdx + 1;
-        })();
-        chrome.tabs.update(tabs[rightIdx].id, { active: true });
-      });
-      break;
-    }
-    case "switchToLeftTab": {
-      chrome.tabs.query({ currentWindow: true }, (tabs) => {
-        const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
-        const leftIdx = (() => {
-          if (currIdx === 0) return tabs.length - 1;
-          return currIdx - 1;
-        })();
-        chrome.tabs.update(tabs[leftIdx].id, { active: true });
-      });
-      break;
-    }
     case "switchToFirstTab": {
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         console.log("switching to first");
@@ -76,6 +54,28 @@ chrome.commands.onCommand.addListener((command) => {
             top: -Math.floor(window.innerHeight / 2),
           });
         },
+      });
+      break;
+    }
+    case "switch-to-right-tab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
+        const rightIdx = (() => {
+          if (currIdx === tabs.length - 1) return 0;
+          return currIdx + 1;
+        })();
+        chrome.tabs.update(tabs[rightIdx].id, { active: true });
+      });
+      break;
+    }
+    case "switch-to-left-tab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
+        const leftIdx = (() => {
+          if (currIdx === 0) return tabs.length - 1;
+          return currIdx - 1;
+        })();
+        chrome.tabs.update(tabs[leftIdx].id, { active: true });
       });
       break;
     }

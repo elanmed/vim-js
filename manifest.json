@@ -16,22 +16,19 @@
   "host_permissions": ["<all_urls>"],
   "commands": {
     "switch-to-prev-tab": {
-      "suggested_key": {
-        "default": "Ctrl+6"
-      },
       "description": "Switch to the previous tab"
     },
     "scroll-down": {
-      "suggested_key": {
-        "default": "Ctrl+D"
-      },
       "description": "Scroll down by a half-page"
     },
     "scroll-up": {
-      "suggested_key": {
-        "default": "Ctrl+U"
-      },
       "description": "Scroll up by a half-page"
+    },
+    "switch-to-left-tab": {
+      "description": "Switch to the tab to the left"
+    },
+    "switch-to-right-tab": {
+      "description": "Switch to the tab to the right"
     }
   }
 }
