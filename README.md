@@ -11,7 +11,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `H` Switch to the leftmost tab
 - `s` TODO Initiate [seek](https://github.com/elanmed/seek.nvim)-like labels
 
-### Chrome extension keymaps:
+### Chrome extension keymaps
 
 > Note that these keymaps need to be explicitly set in `chrome://extensions/shortcuts`, the following are suggested keys
 
