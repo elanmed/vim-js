@@ -1,13 +1,15 @@
 let activeToasts = [];
 let firstKey = null;
 
-const twoKeyKeymaps = ["gg", "yy", "]t", "[t"];
+// TODO: handle holding shift between two keys
+const twoKeyKeymaps = ["gg", "yy", "ShiftG", "ShiftH", "ShiftL"];
 
 document.addEventListener("keydown", (event) => {
   if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") {
     return;
   }
 
+  // console.log(event.key);
   if (firstKey === null) {
     const isFirstKeyOfKeymap = twoKeyKeymaps.some((keymap) =>
       keymap.startsWith(event.key),
@@ -30,11 +32,12 @@ document.addEventListener("keydown", (event) => {
  */
 function handleSingleKeyKeymap(event) {
   switch (event.key) {
-    case "G": {
-      window.scrollBy({
-        behavior: "instant",
-        top: document.documentElement.scrollHeight,
-      });
+    case "l": {
+      chrome.runtime.sendMessage({ action: "switchToRightTab" });
+      break;
+    }
+    case "h": {
+      chrome.runtime.sendMessage({ action: "switchToLeftTab" });
       break;
     }
   }
@@ -45,6 +48,7 @@ function handleSingleKeyKeymap(event) {
  * @param {string} firstKey
  */
 function handleTwoKeyKeymap(event, firstKey) {
+  console.log(firstKey.concat(event.key));
   switch (firstKey.concat(event.key)) {
     case "gg": {
       window.scrollBy({
@@ -57,12 +61,20 @@ function handleTwoKeyKeymap(event, firstKey) {
       navigator.clipboard.writeText(window.location.href);
       addToast("URL copied");
     }
-    case "]t": {
-      chrome.runtime.sendMessage({ action: "switchToRightTab" });
+    case "ShiftH": {
+      console.log("]T");
+      chrome.runtime.sendMessage({ action: "switchToFirstTab" });
       break;
     }
-    case "[t": {
-      chrome.runtime.sendMessage({ action: "switchToLeftTab" });
+    case "ShiftL": {
+      chrome.runtime.sendMessage({ action: "switchToLastTab" });
+      break;
+    }
+    case "ShiftG": {
+      window.scrollBy({
+        behavior: "instant",
+        top: document.documentElement.scrollHeight,
+      });
       break;
     }
   }

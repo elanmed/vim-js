@@ -11,7 +11,10 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
     case "switchToRightTab": {
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
-        const rightIdx = (currIdx + 1) % tabs.length;
+        const rightIdx = (() => {
+          if (currIdx === tabs.length - 1) return 0;
+          return currIdx + 1;
+        })();
         chrome.tabs.update(tabs[rightIdx].id, { active: true });
       });
       break;
@@ -19,8 +22,24 @@ chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
     case "switchToLeftTab": {
       chrome.tabs.query({ currentWindow: true }, (tabs) => {
         const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
-        const leftIdx = (currIdx - 1) % tabs.length;
+        const leftIdx = (() => {
+          if (currIdx === 0) return tabs.length - 1;
+          return currIdx - 1;
+        })();
         chrome.tabs.update(tabs[leftIdx].id, { active: true });
+      });
+      break;
+    }
+    case "switchToFirstTab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        console.log("switching to first");
+        chrome.tabs.update(tabs[0].id, { active: true });
+      });
+      break;
+    }
+    case "switchToLastTab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        chrome.tabs.update(tabs[tabs.length - 1].id, { active: true });
       });
       break;
     }
