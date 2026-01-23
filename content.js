@@ -96,3 +96,4 @@ function addToast(message) {
     });
   }, 2000);
 }
+
