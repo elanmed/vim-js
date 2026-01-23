@@ -9,5 +9,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `G` Scroll to the bottom of the page
 - `gg` Scroll to the top of the page
 - `yy` Yank the current URL to the clipboard
-- `<C-^>` Visit the last tab
+- `<C-^>` Switch to the previous tab
+- `]t` Switch to the tab to the right
+- `[t` Switch to the tab to the left
 - `s` TODO Initiate [seek](https://github.com/elanmed/seek.nvim)

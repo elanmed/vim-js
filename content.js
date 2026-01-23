@@ -1,7 +1,7 @@
 let activeToasts = [];
 let firstKey = null;
 
-const twoKeyKeymaps = ["gg", "yy"];
+const twoKeyKeymaps = ["gg", "yy", "]t", "[t"];
 
 document.addEventListener("keydown", (event) => {
   if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") {
@@ -56,6 +56,14 @@ function handleTwoKeyKeymap(event, firstKey) {
     case "yy": {
       navigator.clipboard.writeText(window.location.href);
       addToast("URL copied");
+    }
+    case "]t": {
+      chrome.runtime.sendMessage({ action: "switchToRightTab" });
+      break;
+    }
+    case "[t": {
+      chrome.runtime.sendMessage({ action: "switchToLeftTab" });
+      break;
     }
   }
 }

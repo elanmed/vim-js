@@ -6,9 +6,22 @@ chrome.tabs.onActivated.addListener((activeInfo) => {
   currTabId = activeInfo.tabId;
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   switch (request.action) {
-    case "TODO": {
+    case "switchToRightTab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
+        const rightIdx = (currIdx + 1) % tabs.length;
+        chrome.tabs.update(tabs[rightIdx].id, { active: true });
+      });
+      break;
+    }
+    case "switchToLeftTab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
+        const leftIdx = (currIdx - 1) % tabs.length;
+        chrome.tabs.update(tabs[leftIdx].id, { active: true });
+      });
       break;
     }
   }
