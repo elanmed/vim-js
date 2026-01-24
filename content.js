@@ -1,3 +1,5 @@
+const extension = typeof browser !== "undefined" ? browser : chrome;
+
 let activeToasts = [];
 let firstKey = null;
 let firstKeyTimeout = null;
@@ -41,15 +43,15 @@ document.addEventListener("keydown", (event) => {
 function handleSingleKeyKeymap(event) {
   switch (event.key) {
     case "H": {
-      chrome.runtime.sendMessage({ action: "switch-to-first-tab" });
+      extension.runtime.sendMessage({ action: "switch-to-first-tab" });
       break;
     }
     case "L": {
-      chrome.runtime.sendMessage({ action: "switch-to-last-tab" });
+      extension.runtime.sendMessage({ action: "switch-to-last-tab" });
       break;
     }
     case "G": {
-      chrome.runtime.sendMessage({ action: "scroll-to-bottom" });
+      extension.runtime.sendMessage({ action: "scroll-to-bottom" });
       break;
     }
   }
@@ -62,16 +64,16 @@ function handleSingleKeyKeymap(event) {
 function handleTwoKeyKeymap(event, firstKey) {
   switch (firstKey.concat(event.key)) {
     case "gg": {
-      chrome.runtime.sendMessage({ action: "scroll-to-top" });
+      extension.runtime.sendMessage({ action: "scroll-to-top" });
       break;
     }
     case "yy": {
-      chrome.runtime.sendMessage({ action: "copy-href-to-clipboard" });
+      extension.runtime.sendMessage({ action: "copy-href-to-clipboard" });
     }
   }
 }
 
-chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   switch (request.action) {
     case "show-toast": {
       addToast(request.message);

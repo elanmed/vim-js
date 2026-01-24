@@ -4,13 +4,8 @@
   "version": "0.0.1",
   "content_scripts": [
     {
-      "js": [
-        "content.js"
-      ],
-      "matches": [
-        "https://*/*",
-        "http://*/*"
-      ]
+      "js": ["content.js"],
+      "matches": ["https://*/*", "http://*/*"]
     }
   ],
   "commands": {
@@ -44,16 +39,6 @@
     "copy-href-to-clipboard": {
       "description": "Copy the current href to the clipboard"
     }
-  },
-  "manifest_version": 3,
-  "background": {
-    "service_worker": "background.js"
-  },
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "permissions": [
-    "tabs",
-    "scripting"
-  ]
+  }
 }
+
