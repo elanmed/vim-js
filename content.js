@@ -10,7 +10,7 @@ let firstKeyTimeout = null;
 let seekActive = false;
 let seekFirstLabelKey = null;
 let seekSecondLabelKey = null;
-let seekLabelElements = [];
+let seekLabels = [];
 
 function resetSeekState() {
   seekActive = false;
@@ -18,7 +18,7 @@ function resetSeekState() {
   seekSecondLabelKey = null;
 
   removeLabelElements();
-  seekLabelElements = [];
+  seekLabels = [];
 }
 
 const twoKeyKeymaps = ["gg", "yy"];
@@ -162,11 +162,23 @@ function handleSeek(event) {
 
   if (seekFirstLabelKey) {
     seekSecondLabelKey = event.key;
+
     addToast(`Selected label: ${seekFirstLabelKey.concat(event.key)}`);
     resetSeekState();
   } else {
-    addToast("Waiting for second label key");
     seekFirstLabelKey = event.key;
+    const labelTexts = seekLabels.map(
+      ({ labelElement, labelText }) => labelText,
+    );
+    if (
+      !labelTexts.some((labelText) => labelText.startsWith(seekFirstLabelKey))
+    ) {
+      addToast("Invalid label");
+      resetSeekState();
+      return;
+    }
+
+    addToast("Waiting for second label key");
   }
 }
 
@@ -195,19 +207,19 @@ function addLabelElements() {
   const elementsWithLabelText = clickableElements.map((element, idx) => {
     return {
       labelText: labels[idx],
-      element,
+      clickableElement: element,
     };
   });
-  elementsWithLabelText.forEach(({ element, labelText }) => {
+  elementsWithLabelText.forEach(({ clickableElement, labelText }) => {
     const range = document.createRange();
-    range.selectNodeContents(element);
+    range.selectNodeContents(clickableElement);
     const rect = range.getBoundingClientRect();
 
-    const computedStyle = window.getComputedStyle(element);
+    const computedStyle = window.getComputedStyle(clickableElement);
     const fontSize = computedStyle.fontSize;
 
     const labelElement = document.createElement("div");
-    seekLabelElements.push(labelElement);
+    seekLabels.push({ labelElement, labelText: labelText });
     labelElement.textContent = labelText;
     const styles = {
       background: "gold",
@@ -229,7 +241,7 @@ function addLabelElements() {
 }
 
 function removeLabelElements() {
-  seekLabelElements.forEach((labelElement) => {
+  seekLabels.forEach(({ labelElement }) => {
     labelElement.remove();
   });
 }
