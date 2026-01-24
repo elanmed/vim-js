@@ -24,7 +24,13 @@ function resetSeekState() {
 const twoKeyKeymaps = ["gg", "yy"];
 
 document.addEventListener("keydown", (event) => {
-  if (event.target.tagName === "INPUT" || event.target.tagName === "TEXTAREA") {
+  console.log(event.target);
+  if (
+    event.target.tagName === "INPUT" ||
+    event.target.tagName === "TEXTAREA" ||
+    event.target.role === "input" ||
+    event.target.role === "textarea"
+  ) {
     return;
   }
 
