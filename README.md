@@ -17,9 +17,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - Click `Load Temporary Add-on` at `about:debugging#/runtime/this-firefox` and upload the `manifest.json`
 - Set shortcuts by cliking on the great, `Manage extension shortcuts` at `about:addons`
 
-### Supported chrome extension keymaps
-
-> That these keymaps need to be explicitly set in `chrome://extensions/shortcuts`
+### Supported extension keymaps
 
 - `switch-to-prev-tab`
 - `scroll-down`
@@ -34,7 +32,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 
 ### Builtin Keymaps
 
-> Disable these by editing the source code
+> For now, these can only be disabled by editing the source code
 
 - `G`: `scroll-to-bottom`
 - `gg`: `scroll-to-top`
