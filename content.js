@@ -32,6 +32,12 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  // TODO think of a better way to structure this
+  if (event.key === "Escape") {
+    extension.runtime.sendMessage({ action: "unfocus" });
+    return;
+  }
+
   if (
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||

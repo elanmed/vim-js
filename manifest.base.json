@@ -41,6 +41,9 @@
     },
     "seek-initiate": {
       "description": "Place labels on clickable elements"
+    },
+    "unfocus": {
+      "description": "Unfocus the current element"
     }
   }
 }

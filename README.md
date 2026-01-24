@@ -34,6 +34,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `scroll-to-top`
 - `copy-href-to-clipboard`
 - `seek-initiate`
+- `unfocus`
 
 ### Builtin Keymaps
 
@@ -44,6 +45,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `yy`: `copy-href-to-clipboard`
 - `L`: `switch-to-first-tab`
 - `H`: `switch-to-last-tab`
+- `Escape`: `unfocus`
 
 ### TODO
 

@@ -124,5 +124,11 @@ function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
+    case "unfocus": {
+      executeScript(() => {
+        document.activeElement.blur();
+      });
+      break;
+    }
   }
 }
