@@ -256,12 +256,12 @@ function removeLabelElements() {
 }
 
 function genLabels() {
-  // TODO: avoid two letters on one hand
-  const labelChars = "fjdkslgha;rueiwotyqpvbcnxmz";
+  const leftLabelChars = "fdsgarewtqvcxz";
+  const rightLabelChars = "jklh;uioypbnm";
   const labels = [];
-  for (const labelCharOne of labelChars) {
-    for (const labelCharTwo of labelChars) {
-      if (labelCharOne === labelCharTwo) continue;
+
+  for (const labelCharOne of leftLabelChars) {
+    for (const labelCharTwo of rightLabelChars) {
       labels.push(labelCharOne.concat(labelCharTwo));
     }
   }
