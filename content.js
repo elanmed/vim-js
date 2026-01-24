@@ -23,9 +23,8 @@ function resetSeekState() {
 
 const twoKeyKeymaps = ["gg", "yy"];
 
-document.addEventListener("scroll", () => {
-  resetSeekState();
-});
+document.addEventListener("scroll", () => resetSeekState());
+document.addEventListener("resize", () => resetSeekState());
 
 document.addEventListener("keydown", (event) => {
   if (
