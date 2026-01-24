@@ -247,13 +247,15 @@ function addLabelElements() {
     const computedStyle = window.getComputedStyle(clickableElement);
     const fontSize = computedStyle.fontSize;
 
-    const labelElement = document.createElement("div");
+    const labelElement = document.createElement("span");
     seekLabels.push({ labelElement, clickableElement, labelText: labelText });
     labelElement.textContent = labelText;
     const styles = {
+      lineHeight: "1",
       background: "gold",
       color: "black",
-      padding: "0 1px",
+      padding: "2px",
+      opacity: "0.9",
       borderRadius: "2px",
       zIndex: "999999",
       position: "fixed",
