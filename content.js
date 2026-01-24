@@ -32,18 +32,15 @@ document.addEventListener("keydown", (event) => {
 function handleSingleKeyKeymap(event) {
   switch (event.key) {
     case "H": {
-      chrome.runtime.sendMessage({ action: "switchToFirstTab" });
+      chrome.runtime.sendMessage({ action: "switch-to-first-tab" });
       break;
     }
     case "L": {
-      chrome.runtime.sendMessage({ action: "switchToLastTab" });
+      chrome.runtime.sendMessage({ action: "switch-to-last-tab" });
       break;
     }
     case "G": {
-      window.scrollBy({
-        behavior: "instant",
-        top: document.documentElement.scrollHeight,
-      });
+      chrome.runtime.sendMessage({ action: "scroll-to-bottom" });
       break;
     }
   }
@@ -54,21 +51,23 @@ function handleSingleKeyKeymap(event) {
  * @param {string} firstKey
  */
 function handleTwoKeyKeymap(event, firstKey) {
-  console.log(firstKey.concat(event.key));
   switch (firstKey.concat(event.key)) {
     case "gg": {
-      window.scrollBy({
-        behavior: "instant",
-        top: -document.documentElement.scrollHeight,
-      });
+      chrome.runtime.sendMessage({ action: "scroll-to-top" });
       break;
     }
     case "yy": {
-      navigator.clipboard.writeText(window.location.href);
-      addToast("URL copied");
+      chrome.runtime.sendMessage({ action: "copy-href-to-clipboard" });
     }
   }
 }
+
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+  console.log(request.action);
+  if (request.action === "show-toast") {
+    addToast(request.message);
+  }
+});
 
 /**
  * @param {string} message

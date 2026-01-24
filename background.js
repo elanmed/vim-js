@@ -1,31 +1,33 @@
 let currTabId = null;
 let prevTabId = null;
 
+function executeScript(callback) {
+  chrome.scripting.executeScript({
+    target: { tabId: currTabId },
+    func: callback,
+  });
+}
+
 chrome.tabs.onActivated.addListener((activeInfo) => {
   prevTabId = currTabId;
   currTabId = activeInfo.tabId;
 });
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+  handleMessageOrCommand(request.action);
   switch (request.action) {
-    case "switchToFirstTab": {
-      chrome.tabs.query({ currentWindow: true }, (tabs) => {
-        console.log("switching to first");
-        chrome.tabs.update(tabs[0].id, { active: true });
-      });
-      break;
-    }
-    case "switchToLastTab": {
-      chrome.tabs.query({ currentWindow: true }, (tabs) => {
-        chrome.tabs.update(tabs[tabs.length - 1].id, { active: true });
-      });
-      break;
-    }
   }
 });
 
 chrome.commands.onCommand.addListener((command) => {
-  switch (command) {
+  handleMessageOrCommand(command);
+});
+
+/**
+ * @param {string} messageOrCommand
+ */
+function handleMessageOrCommand(messageOrCommand) {
+  switch (messageOrCommand) {
     case "switch-to-prev-tab": {
       chrome.tabs.get(prevTabId, (tab) => {
         chrome.windows.update(tab.windowId, { focused: true });
@@ -34,26 +36,20 @@ chrome.commands.onCommand.addListener((command) => {
       break;
     }
     case "scroll-down": {
-      chrome.scripting.executeScript({
-        target: { tabId: currTabId },
-        func: () => {
-          window.scrollBy({
-            behavior: "smooth",
-            top: Math.floor(window.innerHeight / 2),
-          });
-        },
+      executeScript(() => {
+        window.scrollBy({
+          behavior: "smooth",
+          top: Math.floor(window.innerHeight / 2),
+        });
       });
       break;
     }
     case "scroll-up": {
-      chrome.scripting.executeScript({
-        target: { tabId: currTabId },
-        func: () => {
-          window.scrollBy({
-            behavior: "smooth",
-            top: -Math.floor(window.innerHeight / 2),
-          });
-        },
+      executeScript(() => {
+        window.scrollBy({
+          behavior: "smooth",
+          top: -Math.floor(window.innerHeight / 2),
+        });
       });
       break;
     }
@@ -79,5 +75,46 @@ chrome.commands.onCommand.addListener((command) => {
       });
       break;
     }
+    case "switch-to-first-tab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        console.log("switching to first");
+        chrome.tabs.update(tabs[0].id, { active: true });
+      });
+      break;
+    }
+    case "switch-to-last-tab": {
+      chrome.tabs.query({ currentWindow: true }, (tabs) => {
+        chrome.tabs.update(tabs[tabs.length - 1].id, { active: true });
+      });
+      break;
+    }
+    case "scroll-to-bottom": {
+      executeScript(() => {
+        window.scrollBy({
+          behavior: "instant",
+          top: document.documentElement.scrollHeight,
+        });
+      });
+      break;
+    }
+    case "scroll-to-top": {
+      executeScript(() => {
+        window.scrollBy({
+          behavior: "instant",
+          top: -document.documentElement.scrollHeight,
+        });
+      });
+      break;
+    }
+    case "copy-href-to-clipboard": {
+      executeScript(() => {
+        navigator.clipboard.writeText(window.location.href);
+      });
+      chrome.tabs.sendMessage(currTabId, {
+        action: "show-toast",
+        message: "URL copied",
+      });
+      break;
+    }
   }
-});
+}

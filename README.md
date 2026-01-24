@@ -2,21 +2,31 @@
 
 My take on a minimalist [vimium](https://github.com/philc/vimium)
 
+### Supported chrome extension keymaps
+
+> That these keymaps need to be explicitly set in `chrome://extensions/shortcuts`
+
+- switch-to-prev-tab
+- scroll-down
+- scroll-up
+- switch-to-right-tab
+- switch-to-left-tab
+- switch-to-first-tab
+- switch-to-last-tab
+- scroll-to-bottom
+- scroll-to-top
+- copy-href-to-clipboard
+
 ### Builtin Keymaps
 
-- `G` Scroll to the bottom of the page
-- `gg` Scroll to the top of the page
-- `yy` Yank the current URL to the clipboard
-- `L` Switch to the rightmost tab
-- `H` Switch to the leftmost tab
-- `s` TODO Initiate [seek](https://github.com/elanmed/seek.nvim)-like labels
+> Disable these by editing the source code
 
-### Chrome extension keymaps
+- `G` scroll-to-bottom
+- `gg` scroll-to-top
+- `yy` copy-href-to-clipboard
+- `L` switch-to-first-tab
+- `H` switch-to-last-tab
 
-> Note that these keymaps need to be explicitly set in `chrome://extensions/shortcuts`, the following are suggested keys
+### TODO
 
-- `<C-d>` Scroll down by a half-page
-- `<C-u>` Scroll up by a half-page
-- `<C-^>` Switch to the previous tab
-- `<C-h>` Switch to the tab to the right
-- `<C-l>` Switch to the tab to the left
+- Keymap to initiate [seek](https://github.com/elanmed/seek.nvim)-like labels
