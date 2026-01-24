@@ -34,6 +34,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `scroll-to-top`
 - `copy-href-to-clipboard`
 - `seek-initiate`
+  - Place labels on clickable elements on the page
 - `unfocus`
 - `history-back`
 - `history-forward`
@@ -49,4 +50,3 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 
 ### TODO
 
-- Keymap to initiate [seek](https://github.com/elanmed/seek.nvim)-like labels
