@@ -38,6 +38,9 @@
     },
     "copy-href-to-clipboard": {
       "description": "Copy the current href to the clipboard"
+    },
+    "seek-initiate": {
+      "description": "Place labels on clickable elements"
     }
   }
 }
