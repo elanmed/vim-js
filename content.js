@@ -103,6 +103,7 @@ function handleTwoKeyKeymap(event, firstKey) {
     }
     case "yy": {
       extension.runtime.sendMessage({ action: "copy-href-to-clipboard" });
+      break;
     }
   }
 }
@@ -111,10 +112,12 @@ extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   switch (request.action) {
     case "show-toast": {
       addToast(request.message);
+      break;
     }
     case "seek-initiate": {
       addLabelElements();
       seekActive = true;
+      break;
     }
   }
 });
