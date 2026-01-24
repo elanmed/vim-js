@@ -1,6 +1,10 @@
 # vim-js
 
-My take on a minimalist [vimium](https://github.com/philc/vimium) - no dependencies, two javascript files, ~400LOC
+My take on a minimalist [vimium](https://github.com/philc/vimium)
+
+- No dependencies
+- Two javascript files
+- ~400 lines of code
 
 ### Build
 
