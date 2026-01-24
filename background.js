@@ -118,12 +118,12 @@ function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
-    case "seek-initiate": {
-      extension.tabs.sendMessage(currTabId, {
-        action: "show-toast",
-        message: "Waiting for first key",
-      });
-      break;
-    }
+    // case "seek-initiate": {
+    //   extension.tabs.sendMessage(currTabId, {
+    //     action: "show-toast",
+    //     message: "Waiting for first key",
+    //   });
+    //   break;
+    // }
   }
 }

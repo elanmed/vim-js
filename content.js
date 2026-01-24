@@ -1,18 +1,24 @@
 const extension = typeof browser !== "undefined" ? browser : chrome;
 
+const labels = genLabels();
+
 let activeToasts = [];
 
 let firstKey = null;
 let firstKeyTimeout = null;
 
 let seekActive = false;
-let seekFirstKey = null;
-let seekSecondKey = null;
+let seekFirstLabelKey = null;
+let seekSecondLabelKey = null;
+let seekLabelElements = [];
 
 function resetSeekState() {
   seekActive = false;
-  seekFirstKey = null;
-  seekSecondKey = null;
+  seekFirstLabelKey = null;
+  seekSecondLabelKey = null;
+
+  removeLabelElements();
+  seekLabelElements = [];
 }
 
 const twoKeyKeymaps = ["gg", "yy"];
@@ -69,7 +75,9 @@ function handleSingleKeyKeymap(event) {
       break;
     }
     case "s": {
-      extension.runtime.sendMessage({ action: "seek-initiate" });
+      // extension.runtime.sendMessage({ action: "seek-initiate" });
+      addToast("Waiting for the first key");
+      addLabelElements();
       seekActive = true;
       break;
     }
@@ -106,7 +114,20 @@ extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 function addToast(message) {
   const toast = document.createElement("div");
   toast.textContent = message;
-  toast.style.cssText = `position:fixed;bottom:${20 + activeToasts.length * 60}px;right:20px;background:black;color:white;padding:12px;border-radius:4px;z-index:999999;`;
+  const styles = {
+    position: "fixed",
+    bottom: `${20 + activeToasts.length * 60}px`,
+    right: "20px",
+    background: "black",
+    color: "white",
+    padding: "12px",
+    borderRadius: "4px",
+    zIndex: "999999",
+  };
+
+  for (const [property, value] of Object.entries(styles)) {
+    toast.style[property] = value;
+  }
   document.body.appendChild(toast);
   activeToasts.push(toast);
 
@@ -133,25 +154,17 @@ function handleSeek(event) {
     return;
   }
 
-  if (seekSecondKey) {
-    // process label
-    addToast(`Selected label: ${event.key}`);
+  if (seekFirstLabelKey) {
+    seekSecondLabelKey = event.key;
+    addToast(`Selected label: ${seekFirstLabelKey.concat(event.key)}`);
     resetSeekState();
-  } else if (seekFirstKey) {
-    seekSecondKey = event.key;
-    addToast("Waiting for label");
-
-    // add highlights
-    addLabelHighlights();
   } else {
-    addToast("Waiting for second key");
-    seekFirstKey = event.key;
+    addToast("Waiting for second label key");
+    seekFirstLabelKey = event.key;
   }
 }
 
-function addLabelHighlights() {
-  const labels = "fjdkslgha;rueiwotyqpvbcnxmz";
-
+function addLabelElements() {
   const selectors = [
     "a",
     "button",
@@ -162,7 +175,7 @@ function addLabelHighlights() {
   ];
 
   const elements = Array.from(document.querySelectorAll(selectors.join(", ")));
-  const clickable = elements.filter((element) => {
+  const clickableElements = elements.filter((element) => {
     const rect = element.getBoundingClientRect();
     return (
       rect.width > 0 &&
@@ -173,4 +186,53 @@ function addLabelHighlights() {
       rect.right <= window.innerWidth
     );
   });
+  const elementsWithLabelText = clickableElements.map((element, idx) => {
+    return {
+      labelText: labels[idx],
+      element,
+    };
+  });
+  elementsWithLabelText.forEach(({ element, labelText }) => {
+    const range = document.createRange();
+    range.selectNodeContents(element);
+    const rect = range.getBoundingClientRect();
+
+    const labelElement = document.createElement("div");
+    seekLabelElements.push(labelElement);
+    labelElement.textContent = labelText;
+    const styles = {
+      background: "gold",
+      color: "black",
+      padding: "0 2px",
+      borderRadius: "2px",
+      zIndex: "999999",
+      position: "absolute",
+      top: `${rect.top + window.scrollY}px`,
+      left: `${rect.left + window.scrollX}px`,
+    };
+
+    for (const [property, value] of Object.entries(styles)) {
+      labelElement.style[property] = value;
+    }
+    document.body.appendChild(labelElement);
+  });
+}
+
+function removeLabelElements() {
+  seekLabelElements.forEach((labelElement) => {
+    labelElement.remove();
+  });
+}
+
+function genLabels() {
+  // TODO: avoid two letters on one hand
+  const labelChars = "fjdkslgha;rueiwotyqpvbcnxmz";
+  const labels = [];
+  for (const labelCharOne of labelChars) {
+    for (const labelCharTwo of labelChars) {
+      if (labelCharOne === labelCharTwo) continue;
+      labels.push(labelCharOne.concat(labelCharTwo));
+    }
+  }
+  return labels;
 }
