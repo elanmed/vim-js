@@ -12,7 +12,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 
 #### Firefox
 
-- `node gen-manifest.js chrome`
+- `node gen-manifest.js firefox`
 - Set `xpinstall.signatures.required` to `false` at `about:config`
 - Click `Load Temporary Add-on` at `about:debugging#/runtime/this-firefox` and upload the `manifest.json`
 - Set shortcuts by cliking on the great, `Manage extension shortcuts` at `about:addons`
