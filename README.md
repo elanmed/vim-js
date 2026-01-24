@@ -7,19 +7,19 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 #### Chrome
 
 - `node gen-manifest.js chrome`
-- Click `Load unpacked` at <a href="chrome://extensions/">chrome://extensions/</a> and upload the entire directory
-- Set shortcuts at <a href="chrome://extensions/shortcuts">chrome://extensions/shortcuts</a>
+- Click `Load unpacked` at `chrome://extensions/` upload the entire directory
+- Set shortcuts at `chrome://extensions/shortcuts`
 
 #### Firefox
 
-- `node gen-manifest.js firefox`
-- Set `xpinstall.signatures.required` to `false` at <a href="about:config">about:config</a>
-- Click `Load Temporary Add-on` at <a href="about:debugging#/runtime/this-firefox">about:debugging#/runtime/this-firefox</a> and upload the `manifest.json`
-- Set shortcuts by clicking on the gear, `Manage extension shortcuts` at <a href="about:addons">about:addons</a>
+- `node gen-manifest.js chrome`
+- Set `xpinstall.signatures.required` to `false` at `about:config`
+- Click `Load Temporary Add-on` at `about:debugging#/runtime/this-firefox` and upload the `manifest.json`
+- Set shortcuts by cliking on the great, `Manage extension shortcuts` at `about:addons`
 
 ### Supported chrome extension keymaps
 
-> Note that these keymaps need to be explicitly set in <a href="chrome://extensions/shortcuts">chrome://extensions/shortcuts</a>
+> That these keymaps need to be explicitly set in `chrome://extensions/shortcuts`
 
 - switch-to-prev-tab
 - scroll-down
