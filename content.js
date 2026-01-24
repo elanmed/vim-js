@@ -1,5 +1,6 @@
 let activeToasts = [];
 let firstKey = null;
+let firstKeyTimeout = null;
 
 const twoKeyKeymaps = ["gg", "yy"];
 
@@ -15,12 +16,20 @@ document.addEventListener("keydown", (event) => {
     if (isFirstKeyOfKeymap) {
       // TODO: set a timeout?
       firstKey = event.key;
+
+      firstKeyTimeout = setTimeout(() => {
+        addToast(`Clearing first key: ${firstKey}`);
+        firstKey = null;
+      }, 2000);
+
       return;
     }
     if (event.key === "Shift") return;
 
     handleSingleKeyKeymap(event);
   } else {
+    clearTimeout(firstKeyTimeout);
+
     handleTwoKeyKeymap(event, firstKey);
     firstKey = null;
   }
@@ -63,9 +72,10 @@ function handleTwoKeyKeymap(event, firstKey) {
 }
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
-  console.log(request.action);
-  if (request.action === "show-toast") {
-    addToast(request.message);
+  switch (request.action) {
+    case "show-toast": {
+      addToast(request.message);
+    }
   }
 });
 
