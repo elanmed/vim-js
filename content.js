@@ -140,8 +140,37 @@ function handleSeek(event) {
   } else if (seekFirstKey) {
     seekSecondKey = event.key;
     addToast("Waiting for label");
+
+    // add highlights
+    addLabelHighlights();
   } else {
     addToast("Waiting for second key");
     seekFirstKey = event.key;
   }
+}
+
+function addLabelHighlights() {
+  const labels = "fjdkslgha;rueiwotyqpvbcnxmz";
+
+  const selectors = [
+    "a",
+    "button",
+    'input[type="button"]',
+    'input[type="submit"]',
+    '[role="button"]',
+    "[onclick]",
+  ];
+
+  const elements = Array.from(document.querySelectorAll(selectors.join(", ")));
+  const clickable = elements.filter((element) => {
+    const rect = element.getBoundingClientRect();
+    return (
+      rect.width > 0 &&
+      rect.height > 0 &&
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= window.innerHeight &&
+      rect.right <= window.innerWidth
+    );
+  });
 }
