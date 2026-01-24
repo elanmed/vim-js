@@ -7,15 +7,15 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 #### Chrome
 
 - `node gen-manifest.js chrome`
-- Click `Load unpacked` at [chrome://extensions/](chrome://extensions/) upload the entire directory
-- Set shortcuts at [chrome://extensions/shortcuts](chrome://extensions/shortcuts)
+- Click `Load unpacked` at chrome://extensions/ upload the entire directory
+- Set shortcuts at chrome://extensions/shortcuts
 
 #### Firefox
 
 - `node gen-manifest.js chrome`
 - Set `xpinstall.signatures.required` to `false` at `about:config`
-- Click `Load Temporary Add-on` at [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox) and upload the `manifest.json`
-- Set shortcuts by cliking on the great, `Manage extension shortcuts` at [about:addons](about:addons)
+- Click `Load Temporary Add-on` at about:debugging#/runtime/this-firefox and upload the `manifest.json`
+- Set shortcuts by cliking on the great, `Manage extension shortcuts` at about:addons
 
 ### Supported chrome extension keymaps
 
