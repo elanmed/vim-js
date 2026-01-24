@@ -203,18 +203,22 @@ function addLabelElements() {
     range.selectNodeContents(element);
     const rect = range.getBoundingClientRect();
 
+    const computedStyle = window.getComputedStyle(element);
+    const fontSize = computedStyle.fontSize;
+
     const labelElement = document.createElement("div");
     seekLabelElements.push(labelElement);
     labelElement.textContent = labelText;
     const styles = {
       background: "gold",
       color: "black",
-      padding: "0 2px",
+      padding: "0 1px",
       borderRadius: "2px",
       zIndex: "999999",
-      position: "absolute",
-      top: `${rect.top + window.scrollY}px`,
-      left: `${rect.left + window.scrollX}px`,
+      position: "fixed",
+      top: `${rect.top}px`,
+      left: `${rect.left}px`,
+      fontSize,
     };
 
     for (const [property, value] of Object.entries(styles)) {
