@@ -130,5 +130,13 @@ function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
+    case "history-back": {
+      extension.tabs.goBack();
+      break;
+    }
+    case "history-forward": {
+      extension.tabs.goForward();
+      break;
+    }
   }
 }

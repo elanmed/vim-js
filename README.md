@@ -35,6 +35,8 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `copy-href-to-clipboard`
 - `seek-initiate`
 - `unfocus`
+- `history-back`
+- `history-forward`
 
 ### Builtin Keymaps
 
@@ -43,13 +45,8 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `G`: `scroll-to-bottom`
 - `gg`: `scroll-to-top`
 - `yy`: `copy-href-to-clipboard`
-- `L`: `switch-to-first-tab`
-- `H`: `switch-to-last-tab`
 - `Escape`: `unfocus`
 
 ### TODO
-
-- Navigate back in history stack
-- Navigate forward in history stack
 
 - Keymap to initiate [seek](https://github.com/elanmed/seek.nvim)-like labels

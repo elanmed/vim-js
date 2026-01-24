@@ -77,14 +77,6 @@ document.addEventListener("keydown", (event) => {
  */
 function handleSingleKeyKeymap(event) {
   switch (event.key) {
-    case "H": {
-      extension.runtime.sendMessage({ action: "switch-to-first-tab" });
-      break;
-    }
-    case "L": {
-      extension.runtime.sendMessage({ action: "switch-to-last-tab" });
-      break;
-    }
     case "G": {
       extension.runtime.sendMessage({ action: "scroll-to-bottom" });
       break;

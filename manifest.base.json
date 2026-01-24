@@ -44,6 +44,12 @@
     },
     "unfocus": {
       "description": "Unfocus the current element"
+    },
+    "history-back": {
+      "description": "Go back in the history stack for the current tab"
+    },
+    "history-forward": {
+      "description": "Go forward in the history stack for the current tab"
     }
   }
 }
