@@ -84,9 +84,8 @@ function handleSingleKeyKeymap(event) {
       break;
     }
     case "s": {
-      // extension.runtime.sendMessage({ action: "seek-initiate" });
-      addLabelElements();
-      seekActive = true;
+      // content -> background -> content
+      extension.runtime.sendMessage({ action: "seek-initiate" });
       break;
     }
   }
@@ -112,6 +111,10 @@ extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   switch (request.action) {
     case "show-toast": {
       addToast(request.message);
+    }
+    case "seek-initiate": {
+      addLabelElements();
+      seekActive = true;
     }
   }
 });
@@ -201,6 +204,7 @@ function addLabelElements() {
   ];
 
   const elements = Array.from(document.querySelectorAll(selectors.join(", ")));
+  // TODO: selecting too many elements
   const clickableElements = elements.filter((element) => {
     const rect = element.getBoundingClientRect();
     return (

@@ -42,4 +42,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 
 ### TODO
 
+- Navigate back in history stack
+- Navigate forward in history stack
+
 - Keymap to initiate [seek](https://github.com/elanmed/seek.nvim)-like labels
