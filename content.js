@@ -24,7 +24,6 @@ function resetSeekState() {
 const twoKeyKeymaps = ["gg", "yy"];
 
 document.addEventListener("keydown", (event) => {
-  console.log(event.target);
   if (
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||
