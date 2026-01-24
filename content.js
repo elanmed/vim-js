@@ -82,7 +82,6 @@ function handleSingleKeyKeymap(event) {
     }
     case "s": {
       // extension.runtime.sendMessage({ action: "seek-initiate" });
-      addToast("Waiting for the first key");
       addLabelElements();
       seekActive = true;
       break;
@@ -172,7 +171,8 @@ function handleSeek(event) {
       return;
     }
 
-    addToast(`Selected label: ${seekFirstLabelKey.concat(event.key)}`);
+    selectedLabel.clickableElement.click();
+
     resetSeekState();
   } else {
     seekFirstLabelKey = event.key;
@@ -184,8 +184,6 @@ function handleSeek(event) {
       resetSeekState();
       return;
     }
-
-    addToast("Waiting for second label key");
   }
 }
 
@@ -226,7 +224,7 @@ function addLabelElements() {
     const fontSize = computedStyle.fontSize;
 
     const labelElement = document.createElement("div");
-    seekLabels.push({ labelElement, labelText: labelText });
+    seekLabels.push({ labelElement, clickableElement, labelText: labelText });
     labelElement.textContent = labelText;
     const styles = {
       background: "gold",
