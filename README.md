@@ -33,6 +33,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `scroll-to-bottom`
 - `scroll-to-top`
 - `copy-href-to-clipboard`
+- `seek-initiate`
 
 ### Builtin Keymaps
 

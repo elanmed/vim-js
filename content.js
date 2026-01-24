@@ -27,6 +27,11 @@ document.addEventListener("scroll", () => resetSeekState());
 document.addEventListener("resize", () => resetSeekState());
 
 document.addEventListener("keydown", (event) => {
+  if (seekActive) {
+    handleSeek(event);
+    return;
+  }
+
   if (
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||
@@ -34,11 +39,6 @@ document.addEventListener("keydown", (event) => {
     event.target.isContentEditable ||
     event.target.tagName === "SELECT"
   ) {
-    return;
-  }
-
-  if (seekActive) {
-    handleSeek(event);
     return;
   }
 
