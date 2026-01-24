@@ -162,14 +162,21 @@ function handleSeek(event) {
 
   if (seekFirstLabelKey) {
     seekSecondLabelKey = event.key;
+    const selectedLabelText = seekFirstLabelKey.concat(event.key);
+    const selectedLabel = seekLabels.find(
+      ({ labelText }) => labelText === selectedLabelText,
+    );
+    if (!selectedLabel) {
+      addToast("Invalid label");
+      resetSeekState();
+      return;
+    }
 
     addToast(`Selected label: ${seekFirstLabelKey.concat(event.key)}`);
     resetSeekState();
   } else {
     seekFirstLabelKey = event.key;
-    const labelTexts = seekLabels.map(
-      ({ labelElement, labelText }) => labelText,
-    );
+    const labelTexts = seekLabels.map(({ labelText }) => labelText);
     if (
       !labelTexts.some((labelText) => labelText.startsWith(seekFirstLabelKey))
     ) {
