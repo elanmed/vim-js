@@ -1,8 +1,19 @@
 const extension = typeof browser !== "undefined" ? browser : chrome;
 
 let activeToasts = [];
+
 let firstKey = null;
 let firstKeyTimeout = null;
+
+let seekActive = false;
+let seekFirstKey = null;
+let seekSecondKey = null;
+
+function resetSeekState() {
+  seekActive = false;
+  seekFirstKey = null;
+  seekSecondKey = null;
+}
 
 const twoKeyKeymaps = ["gg", "yy"];
 
@@ -11,19 +22,22 @@ document.addEventListener("keydown", (event) => {
     return;
   }
 
+  if (seekActive) {
+    handleSeek(event);
+    return;
+  }
+
   if (firstKey === null) {
     const isFirstKeyOfKeymap = twoKeyKeymaps.some((keymap) =>
       keymap.startsWith(event.key),
     );
     if (isFirstKeyOfKeymap) {
-      // TODO: set a timeout?
       firstKey = event.key;
 
       firstKeyTimeout = setTimeout(() => {
         addToast(`Clearing first key: ${firstKey}`);
         firstKey = null;
       }, 2000);
-
       return;
     }
     if (event.key === "Shift") return;
@@ -52,6 +66,11 @@ function handleSingleKeyKeymap(event) {
     }
     case "G": {
       extension.runtime.sendMessage({ action: "scroll-to-bottom" });
+      break;
+    }
+    case "s": {
+      extension.runtime.sendMessage({ action: "seek-initiate" });
+      seekActive = true;
       break;
     }
   }
@@ -104,3 +123,25 @@ function addToast(message) {
   }, 2000);
 }
 
+/**
+ * @param {KeyboardEvent} event
+ */
+function handleSeek(event) {
+  if (event.key === "Escape") {
+    resetSeekState();
+    addToast("Exiting seek");
+    return;
+  }
+
+  if (seekSecondKey) {
+    // process label
+    addToast(`Selected label: ${event.key}`);
+    resetSeekState();
+  } else if (seekFirstKey) {
+    seekSecondKey = event.key;
+    addToast("Waiting for label");
+  } else {
+    addToast("Waiting for second key");
+    seekFirstKey = event.key;
+  }
+}
