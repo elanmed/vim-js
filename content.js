@@ -27,8 +27,9 @@ document.addEventListener("keydown", (event) => {
   if (
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||
-    event.target.role === "input" ||
-    event.target.role === "textarea"
+    event.target.role === "textbox" ||
+    event.target.isContentEditable ||
+    event.target.tagName === "SELECT"
   ) {
     return;
   }
