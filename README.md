@@ -53,10 +53,10 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `<C-6>`: `switch-to-prev-tab`
 - `<C-d>`: `scroll-down`
 - `<C-u>`: `scroll-up`
-- `<C-l>`: `switch-to-right-tab`
-- `<C-h>`: `switch-to-left-tab`
-- `<C-j>`: `switch-to-first-tab`
-- `<C-k>`: `switch-to-last-tab`
+- `<C-j>`: `switch-to-right-tab`
+- `<C-k>`: `switch-to-left-tab`
+- `<C-h>`: `switch-to-first-tab`
+- `<C-l>`: `switch-to-last-tab`
 - `<C-s>`: `seek-initiate`
 - `<C-o>`: `history-back`
 - `<C-i>`: `history-forward`

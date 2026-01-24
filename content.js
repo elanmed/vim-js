@@ -81,11 +81,6 @@ function handleSingleKeyKeymap(event) {
       extension.runtime.sendMessage({ action: "scroll-to-bottom" });
       break;
     }
-    case "s": {
-      // content -> background -> content
-      extension.runtime.sendMessage({ action: "seek-initiate" });
-      break;
-    }
   }
 }
 
