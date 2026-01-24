@@ -159,6 +159,8 @@ function addToast(message) {
  * @param {KeyboardEvent} event
  */
 function handleSeek(event) {
+  event.preventDefault();
+
   if (event.key === "Escape") {
     resetSeekState();
     addToast("Exiting seek");
@@ -177,6 +179,7 @@ function handleSeek(event) {
       return;
     }
 
+    selectedLabel.clickableElement.focus();
     selectedLabel.clickableElement.click();
 
     resetSeekState();
@@ -199,8 +202,19 @@ function addLabelElements() {
     "button",
     'input[type="button"]',
     'input[type="submit"]',
+    'input[type="checkbox"]',
+    'input[type="radio"]',
     '[role="button"]',
+    '[role="link"]',
+    '[role="tab"]',
+    '[role="menuitem"]',
+    '[role="option"]',
     "[onclick]",
+    "select",
+    "summary",
+    "input",
+    "textarea",
+    '[role="textbox"]',
   ];
 
   const elements = Array.from(document.querySelectorAll(selectors.join(", ")));
@@ -223,9 +237,7 @@ function addLabelElements() {
     };
   });
   elementsWithLabelText.forEach(({ clickableElement, labelText }) => {
-    const range = document.createRange();
-    range.selectNodeContents(clickableElement);
-    const rect = range.getBoundingClientRect();
+    const rect = clickableElement.getBoundingClientRect();
 
     const computedStyle = window.getComputedStyle(clickableElement);
     const fontSize = computedStyle.fontSize;
