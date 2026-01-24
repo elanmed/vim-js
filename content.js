@@ -221,14 +221,23 @@ function addLabelElements() {
   // TODO: selecting too many elements
   const clickableElements = elements.filter((element) => {
     const rect = element.getBoundingClientRect();
-    return (
-      rect.width > 0 &&
-      rect.height > 0 &&
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= window.innerHeight &&
-      rect.right <= window.innerWidth
-    );
+    const computedStyle = window.getComputedStyle(element);
+
+    if (rect.width === 0 || rect.height === 0) return false;
+    if (computedStyle.visibility === "hidden") return false;
+    if (computedStyle.display === "none") return false;
+    if (computedStyle.opacity === "0") return false;
+
+    if (
+      rect.top >= window.innerHeight ||
+      rect.bottom <= 0 ||
+      rect.left >= window.innerWidth ||
+      rect.right <= 0
+    ) {
+      return false;
+    }
+
+    return true;
   });
   const elementsWithLabelText = clickableElements.map((element, idx) => {
     return {
