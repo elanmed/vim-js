@@ -124,10 +124,12 @@ function handleSingleKeyKeymap(event) {
     //   break;
     // }
     case "l": {
+      if (event.ctrlKey) return;
       extension.runtime.sendMessage({ action: "switch-to-right-tab" });
       break;
     }
     case "h": {
+      if (event.ctrlKey) return;
       extension.runtime.sendMessage({ action: "switch-to-left-tab" });
       break;
     }
