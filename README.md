@@ -4,7 +4,7 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 
 - No dependencies
 - Two javascript files
-- ~400 lines of code
+- ~500 lines of code
 
 ### Build
 
