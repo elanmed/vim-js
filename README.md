@@ -1,6 +1,6 @@
 # vim-js
 
-My take on a minimalist [vimium](https://github.com/philc/vimium)
+My take on a minimal [vimium](https://github.com/philc/vimium)
 
 - No dependencies
 - Two javascript files
