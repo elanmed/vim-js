@@ -6,6 +6,8 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - Two javascript files
 - ~500 lines of code
 
+![demo](https://elanmed.dev/nvim-plugins/vim-js.png)
+
 ### Build
 
 #### Chrome
