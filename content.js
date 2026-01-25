@@ -113,28 +113,28 @@ extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
       addToast("URL copied");
     }
     case "scroll-down": {
-      window.scrollBy({
+      getScrollableBaseElement({ defaultBase: window }).scrollBy({
         behavior: "smooth",
         top: Math.floor(window.innerHeight / 2),
       });
       break;
     }
     case "scroll-up": {
-      window.scrollBy({
+      getScrollableBaseElement({ defaultBase: window }).scrollBy({
         behavior: "smooth",
         top: -Math.floor(window.innerHeight / 2),
       });
       break;
     }
     case "scroll-to-bottom": {
-      window.scrollBy({
+      getScrollableBaseElement({ defaultBase: window }).scrollBy({
         behavior: "instant",
         top: document.documentElement.scrollHeight,
       });
       break;
     }
     case "scroll-to-top": {
-      window.scrollBy({
+      getScrollableBaseElement({ defaultBase: window }).scrollBy({
         behavior: "instant",
         top: -document.documentElement.scrollHeight,
       });
@@ -238,12 +238,12 @@ function addLabelElements() {
     '[role="tab"]',
     '[role="menuitem"]',
     '[role="option"]',
+    '[role="textbox"]',
     "[onclick]",
     "select",
     "summary",
     "input",
     "textarea",
-    '[role="textbox"]',
     "label",
   ];
 
@@ -334,7 +334,7 @@ function isElementVisible(element) {
  * @param {Object} params
  * @param {Element} params.defaultBase
  */
-function getBaseElement({ defaultBase = window }) {
+function getBaseElement({ defaultBase }) {
   const dialogSelectors = ["dialog", '[role="dialog"]', '[role="alertdialog"]'];
   const dialogElements = Array.from(
     document.querySelectorAll(dialogSelectors.join(", ")),
@@ -342,4 +342,38 @@ function getBaseElement({ defaultBase = window }) {
   const visibleElements = dialogElements.filter(isElementVisible);
   if (visibleElements.length) return visibleElements[0];
   return defaultBase;
+}
+
+/**
+ * @param {Element} element
+ */
+function isElementScrollable(element) {
+  const { overflowY } = window.getComputedStyle(element);
+  const { scrollHeight, clientHeight } = element;
+
+  const allowsOverflow = overflowY === "scroll" || overflowY === "auto";
+  return allowsOverflow && scrollHeight > clientHeight;
+}
+
+/**
+ * @param {Element} element
+ */
+function getFirstScrollableChild(element) {
+  if (isElementScrollable(element)) return element;
+  for (const child of element.children) {
+    const scrollableChild = getFirstScrollableChild(child);
+    if (scrollableChild) return scrollableChild;
+  }
+  return undefined;
+}
+
+/**
+ * @param {Object} params
+ * @param {Element} params.defaultBase
+ */
+function getScrollableBaseElement({ defaultBase }) {
+  const baseElement = getBaseElement({ defaultBase });
+  if (baseElement === defaultBase) return defaultBase;
+
+  return getFirstScrollableChild(baseElement);
 }
