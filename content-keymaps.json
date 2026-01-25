@@ -1,3 +1,28 @@
-{
-  "key": "value"
-}
+[
+  {
+    "altKey": false,
+    "ctrlKey": false,
+    "metaKey": false,
+    "shiftKey": true,
+    "key": "G",
+    "command": "scroll-to-bottom"
+  },
+  {
+    "key": "l",
+    "command": "switch-to-right-tab"
+  },
+  {
+    "key": "h",
+    "command": "switch-to-left-tab"
+  },
+  {
+    "shiftKey": true,
+    "key": "H",
+    "command": "switch-to-first-tab"
+  },
+  {
+    "shiftKey": true,
+    "key": "L",
+    "command": "switch-to-last-tab"
+  }
+]

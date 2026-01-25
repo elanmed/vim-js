@@ -1,19 +1,25 @@
 const extension = typeof browser === "undefined" ? chrome : browser;
 
-async function getJson() {
+async function getContentKeymaps() {
   const url = chrome.runtime.getURL("content-keymaps.json");
-  const response = await fetch(url);
-  const data = await response.json();
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (e) {
+    addToast(`Error fetching content-keymaps.json: ${JSON.stringify(e)}`);
+    return [];
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (e) {
+    addToast(`Error parsing content-keymaps.json: ${JSON.stringify(e)}`);
+    return [];
+  }
+
   return data;
 }
-
-(async () => {
-  try {
-    console.log(await getJson());
-  } catch (e) {
-    console.log(e);
-  }
-})();
 
 const labels = genLabels();
 
@@ -41,7 +47,7 @@ const twoKeyKeymaps = ["gg", "yy"];
 document.addEventListener("scroll", () => resetSeekState());
 document.addEventListener("resize", () => resetSeekState());
 
-document.addEventListener("keydown", (event) => {
+document.addEventListener("keydown", async (event) => {
   if (seekActive) {
     handleSeek(event);
     return;
@@ -78,7 +84,7 @@ document.addEventListener("keydown", (event) => {
     }
     if (event.key === "Shift") return;
 
-    handleSingleKeyKeymap(event);
+    await handleSingleKeyKeymap(event);
   } else {
     clearTimeout(firstKeyTimeout);
 
@@ -90,73 +96,12 @@ document.addEventListener("keydown", (event) => {
 /**
  * @param {KeyboardEvent} event
  */
-function handleSingleKeyKeymap(event) {
-  switch (event.key) {
-    case "G": {
-      extension.runtime.sendMessage({ action: "scroll-to-bottom" });
-      break;
-    }
-    // case "d": {
-    //   if (event.ctrlKey) {
-    //     event.preventDefault();
-    //     handleMessage("scroll-down");
-    //   }
-    //   break;
-    // }
-    // case "u": {
-    //   if (event.ctrlKey) {
-    //     event.preventDefault();
-    //     handleMessage("scroll-up");
-    //   }
-    //   break;
-    // }
-    // case "s": {
-    //   if (event.ctrlKey) {
-    //     event.preventDefault();
-    //     handleMessage("seek-initiate");
-    //   }
-    //   break;
-    // }
-    // case "o": {
-    //   if (event.ctrlKey) {
-    //     event.preventDefault();
-    //     extension.runtime.sendMessage({ action: "history-back" });
-    //   }
-    //   break;
-    // }
-    // case "i": {
-    //   if (event.ctrlKey) {
-    //     event.preventDefault();
-    //     extension.runtime.sendMessage({ action: "history-forward" });
-    //   }
-    //   break;
-    // }
-    // case "6": {
-    //   if (event.ctrlKey) {
-    //     event.preventDefault();
-    //     extension.runtime.sendMessage({ action: "switch-to-prev-tab" });
-    //   }
-    //   break;
-    // }
-    case "l": {
-      if (event.ctrlKey) return;
-      extension.runtime.sendMessage({ action: "switch-to-right-tab" });
-      break;
-    }
-    case "h": {
-      if (event.ctrlKey) return;
-      extension.runtime.sendMessage({ action: "switch-to-left-tab" });
-      break;
-    }
-    case "L": {
-      extension.runtime.sendMessage({ action: "switch-to-last-tab" });
-      break;
-    }
-    case "H": {
-      extension.runtime.sendMessage({ action: "switch-to-first-tab" });
-      break;
-    }
-  }
+async function handleSingleKeyKeymap(event) {
+  const keymaps = await getContentKeymaps();
+  const matchingKeymap = keymaps.find((keymap) => isSameKey(keymap, event));
+  if (!matchingKeymap) return;
+
+  extension.runtime.sendMessage({ action: matchingKeymap.command });
 }
 
 /**
@@ -463,4 +408,24 @@ function getScrollableBaseElement({ defaultBase }) {
   if (baseElement === defaultBase) return defaultBase;
 
   return getFirstScrollableChild(baseElement);
+}
+
+/**
+ * @param {KeyboardEvent} event
+ * @param {Object} keymap
+ * @param {boolean} keymap.altKey
+ * @param {boolean} keymap.ctrlKey
+ * @param {boolean} keymap.metaKey
+ * @param {boolean} keymap.shiftKey
+ * @param {string} keymap.key
+ * @param {string} keymap.command
+ */
+function isSameKey(keymap, event) {
+  return (
+    event.altKey === (keymap.altKey ?? false) &&
+    event.ctrlKey === (keymap.ctrlKey ?? false) &&
+    event.metaKey === (keymap.metaKey ?? false) &&
+    event.shiftKey === (keymap.shiftKey ?? false) &&
+    event.key === keymap.key
+  );
 }
