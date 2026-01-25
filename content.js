@@ -365,7 +365,7 @@ function removeLabelElements() {
 
 function genLabels() {
   const leftLabelChars = "fdsgarewtqvcxz";
-  const rightLabelChars = "jklh;uioypbnm";
+  const rightLabelChars = "jklh;uioypnm";
   const labels = [];
 
   for (const labelCharOne of leftLabelChars) {
