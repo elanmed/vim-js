@@ -47,16 +47,16 @@ My take on a minimalist [vimium](https://github.com/philc/vimium)
 - `gg`: `scroll-to-top`
 - `yy`: `copy-href-to-clipboard`
 - `Escape`: `unfocus`
+- `l`: `switch-to-right-tab`
+- `h`: `switch-to-left-tab`
+- `H`: `switch-to-first-tab`
+- `L`: `switch-to-last-tab`
 
 ### Suggested keymaps
 
 - `<C-6>`: `switch-to-prev-tab`
 - `<C-d>`: `scroll-down`
 - `<C-u>`: `scroll-up`
-- `<C-j>`: `switch-to-right-tab`
-- `<C-k>`: `switch-to-left-tab`
-- `<C-h>`: `switch-to-first-tab`
-- `<C-l>`: `switch-to-last-tab`
 - `<C-s>`: `seek-initiate`
 - `<C-o>`: `history-back`
 - `<C-i>`: `history-forward`

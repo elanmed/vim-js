@@ -81,6 +81,64 @@ function handleSingleKeyKeymap(event) {
       extension.runtime.sendMessage({ action: "scroll-to-bottom" });
       break;
     }
+    // case "d": {
+    //   if (event.ctrlKey) {
+    //     event.preventDefault();
+    //     extension.runtime.sendMessage({ action: "scroll-down" });
+    //   }
+    //   break;
+    // }
+    // case "u": {
+    //   if (event.ctrlKey) {
+    //     event.preventDefault();
+    //     extension.runtime.sendMessage({ action: "scroll-up" });
+    //   }
+    //   break;
+    // }
+    // case "s": {
+    //   if (event.ctrlKey) {
+    //     event.preventDefault();
+    //     extension.runtime.sendMessage({ action: "seek-initiate" });
+    //   }
+    //   break;
+    // }
+    // case "o": {
+    //   if (event.ctrlKey) {
+    //     event.preventDefault();
+    //     extension.runtime.sendMessage({ action: "history-back" });
+    //   }
+    //   break;
+    // }
+    // case "i": {
+    //   if (event.ctrlKey) {
+    //     event.preventDefault();
+    //     extension.runtime.sendMessage({ action: "history-forward" });
+    //   }
+    //   break;
+    // }
+    // case "6": {
+    //   if (event.ctrlKey) {
+    //     event.preventDefault();
+    //     extension.runtime.sendMessage({ action: "switch-to-prev-tab" });
+    //   }
+    //   break;
+    // }
+    case "l": {
+      extension.runtime.sendMessage({ action: "switch-to-right-tab" });
+      break;
+    }
+    case "h": {
+      extension.runtime.sendMessage({ action: "switch-to-left-tab" });
+      break;
+    }
+    case "L": {
+      extension.runtime.sendMessage({ action: "switch-to-last-tab" });
+      break;
+    }
+    case "H": {
+      extension.runtime.sendMessage({ action: "switch-to-first-tab" });
+      break;
+    }
   }
 }
 
