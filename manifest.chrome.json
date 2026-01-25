@@ -4,5 +4,11 @@
     "service_worker": "background.js"
   },
   "host_permissions": ["<all_urls>"],
-  "permissions": ["tabs", "scripting"]
+  "permissions": ["tabs", "scripting"],
+  "web_accessible_resources": [
+    {
+      "resources": ["content-keymaps.json"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }

@@ -1,4 +1,4 @@
-const extension = typeof browser !== "undefined" ? browser : chrome;
+const extension = typeof browser === "undefined" ? chrome : browser;
 
 let _currTabId = null;
 let prevTabId = null;

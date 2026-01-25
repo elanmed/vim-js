@@ -1,4 +1,19 @@
-const extension = typeof browser !== "undefined" ? browser : chrome;
+const extension = typeof browser === "undefined" ? chrome : browser;
+
+async function getJson() {
+  const url = chrome.runtime.getURL("content-keymaps.json");
+  const response = await fetch(url);
+  const data = await response.json();
+  return data;
+}
+
+(async () => {
+  try {
+    console.log(await getJson());
+  } catch (e) {
+    console.log(e);
+  }
+})();
 
 const labels = genLabels();
 
