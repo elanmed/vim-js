@@ -103,13 +103,45 @@ function handleTwoKeyKeymap(event, firstKey) {
 
 extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   switch (request.action) {
-    case "show-toast": {
-      addToast(request.message);
-      break;
-    }
     case "seek-initiate": {
       addLabelElements();
       seekActive = true;
+      break;
+    }
+    case "copy-href-to-clipboard": {
+      navigator.clipboard.writeText(window.location.href);
+      addToast("URL copied");
+    }
+    case "scroll-down": {
+      window.scrollBy({
+        behavior: "smooth",
+        top: Math.floor(window.innerHeight / 2),
+      });
+      break;
+    }
+    case "scroll-up": {
+      window.scrollBy({
+        behavior: "smooth",
+        top: -Math.floor(window.innerHeight / 2),
+      });
+      break;
+    }
+    case "scroll-to-bottom": {
+      window.scrollBy({
+        behavior: "instant",
+        top: document.documentElement.scrollHeight,
+      });
+      break;
+    }
+    case "scroll-to-top": {
+      window.scrollBy({
+        behavior: "instant",
+        top: -document.documentElement.scrollHeight,
+      });
+      break;
+    }
+    case "unfocus": {
+      document.activeElement.blur();
       break;
     }
   }
@@ -193,7 +225,8 @@ function handleSeek(event) {
 }
 
 function addLabelElements() {
-  const selectors = [
+  const baseElement = getBaseElement({ defaultBase: document });
+  const clickableSelectors = [
     "a",
     "button",
     'input[type="button"]',
@@ -211,31 +244,14 @@ function addLabelElements() {
     "input",
     "textarea",
     '[role="textbox"]',
+    "label",
   ];
 
-  const elements = Array.from(document.querySelectorAll(selectors.join(", ")));
-  // TODO: selecting too many elements
-  const clickableElements = elements.filter((element) => {
-    const rect = element.getBoundingClientRect();
-    const computedStyle = window.getComputedStyle(element);
-
-    if (rect.width === 0 || rect.height === 0) return false;
-    if (computedStyle.visibility === "hidden") return false;
-    if (computedStyle.display === "none") return false;
-    if (computedStyle.opacity === "0") return false;
-
-    if (
-      rect.top >= window.innerHeight ||
-      rect.bottom <= 0 ||
-      rect.left >= window.innerWidth ||
-      rect.right <= 0
-    ) {
-      return false;
-    }
-
-    return true;
-  });
-  const elementsWithLabelText = clickableElements.map((element, idx) => {
+  const clickableElements = Array.from(
+    baseElement.querySelectorAll(clickableSelectors.join(", ")),
+  );
+  const visibleElements = clickableElements.filter(isElementVisible);
+  const elementsWithLabelText = visibleElements.map((element, idx) => {
     return {
       labelText: labels[idx],
       clickableElement: element,
@@ -288,4 +304,42 @@ function genLabels() {
     }
   }
   return labels;
+}
+
+/**
+ * @param {Element} element
+ */
+function isElementVisible(element) {
+  const rect = element.getBoundingClientRect();
+  const computedStyle = window.getComputedStyle(element);
+
+  if (rect.width === 0 || rect.height === 0) return false;
+  if (computedStyle.visibility === "hidden") return false;
+  if (computedStyle.display === "none") return false;
+  if (computedStyle.opacity === "0") return false;
+
+  if (
+    rect.top >= window.innerHeight ||
+    rect.bottom <= 0 ||
+    rect.left >= window.innerWidth ||
+    rect.right <= 0
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+/**
+ * @param {Object} params
+ * @param {Element} params.defaultBase
+ */
+function getBaseElement({ defaultBase = window }) {
+  const dialogSelectors = ["dialog", '[role="dialog"]', '[role="alertdialog"]'];
+  const dialogElements = Array.from(
+    document.querySelectorAll(dialogSelectors.join(", ")),
+  );
+  const visibleElements = dialogElements.filter(isElementVisible);
+  if (visibleElements.length) return visibleElements[0];
+  return defaultBase;
 }

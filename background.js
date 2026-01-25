@@ -3,13 +3,6 @@ const extension = typeof browser !== "undefined" ? browser : chrome;
 let currTabId = null;
 let prevTabId = null;
 
-function executeScript(callback) {
-  extension.scripting.executeScript({
-    target: { tabId: currTabId },
-    func: callback,
-  });
-}
-
 extension.tabs.onActivated.addListener((activeInfo) => {
   prevTabId = currTabId;
   currTabId = activeInfo.tabId;
@@ -38,20 +31,14 @@ function handleMessageOrCommand(messageOrCommand) {
       break;
     }
     case "scroll-down": {
-      executeScript(() => {
-        window.scrollBy({
-          behavior: "smooth",
-          top: Math.floor(window.innerHeight / 2),
-        });
+      extension.tabs.sendMessage(currTabId, {
+        action: "scroll-down",
       });
       break;
     }
     case "scroll-up": {
-      executeScript(() => {
-        window.scrollBy({
-          behavior: "smooth",
-          top: -Math.floor(window.innerHeight / 2),
-        });
+      extension.tabs.sendMessage(currTabId, {
+        action: "scroll-up",
       });
       break;
     }
@@ -79,7 +66,6 @@ function handleMessageOrCommand(messageOrCommand) {
     }
     case "switch-to-first-tab": {
       extension.tabs.query({ currentWindow: true }, (tabs) => {
-        console.log("switching to first");
         extension.tabs.update(tabs[0].id, { active: true });
       });
       break;
@@ -91,30 +77,20 @@ function handleMessageOrCommand(messageOrCommand) {
       break;
     }
     case "scroll-to-bottom": {
-      executeScript(() => {
-        window.scrollBy({
-          behavior: "instant",
-          top: document.documentElement.scrollHeight,
-        });
+      extension.tabs.sendMessage(currTabId, {
+        action: "scroll-to-bottom",
       });
       break;
     }
     case "scroll-to-top": {
-      executeScript(() => {
-        window.scrollBy({
-          behavior: "instant",
-          top: -document.documentElement.scrollHeight,
-        });
+      extension.tabs.sendMessage(currTabId, {
+        action: "scroll-to-top",
       });
       break;
     }
     case "copy-href-to-clipboard": {
-      executeScript(() => {
-        navigator.clipboard.writeText(window.location.href);
-      });
       extension.tabs.sendMessage(currTabId, {
-        action: "show-toast",
-        message: "URL copied",
+        action: "copy-href-to-clipboard",
       });
       break;
     }
@@ -125,8 +101,8 @@ function handleMessageOrCommand(messageOrCommand) {
       break;
     }
     case "unfocus": {
-      executeScript(() => {
-        document.activeElement.blur();
+      extension.tabs.sendMessage(currTabId, {
+        action: "unfocus",
       });
       break;
     }
@@ -140,3 +116,4 @@ function handleMessageOrCommand(messageOrCommand) {
     }
   }
 }
+
