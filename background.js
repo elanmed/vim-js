@@ -10,8 +10,6 @@ extension.tabs.onActivated.addListener((activeInfo) => {
 
 extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
   handleMessageOrCommand(request.action);
-  switch (request.action) {
-  }
 });
 
 extension.commands.onCommand.addListener((command) => {

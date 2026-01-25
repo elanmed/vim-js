@@ -84,21 +84,21 @@ function handleSingleKeyKeymap(event) {
     // case "d": {
     //   if (event.ctrlKey) {
     //     event.preventDefault();
-    //     extension.runtime.sendMessage({ action: "scroll-down" });
+    //     handleMessage("scroll-down");
     //   }
     //   break;
     // }
     // case "u": {
     //   if (event.ctrlKey) {
     //     event.preventDefault();
-    //     extension.runtime.sendMessage({ action: "scroll-up" });
+    //     handleMessage("scroll-up");
     //   }
     //   break;
     // }
     // case "s": {
     //   if (event.ctrlKey) {
     //     event.preventDefault();
-    //     extension.runtime.sendMessage({ action: "seek-initiate" });
+    //     handleMessage("seek-initiate");
     //   }
     //   break;
     // }
@@ -149,18 +149,21 @@ function handleSingleKeyKeymap(event) {
 function handleTwoKeyKeymap(event, firstKey) {
   switch (firstKey.concat(event.key)) {
     case "gg": {
-      extension.runtime.sendMessage({ action: "scroll-to-top" });
+      handleMessage("scroll-to-top");
       break;
     }
     case "yy": {
-      extension.runtime.sendMessage({ action: "copy-href-to-clipboard" });
+      handleMessage("copy-href-to-clipboard");
       break;
     }
   }
 }
 
-extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
-  switch (request.action) {
+/**
+ * @param {string} message
+ */
+function handleMessage(message) {
+  switch (message) {
     case "seek-initiate": {
       addLabelElements();
       seekActive = true;
@@ -204,6 +207,10 @@ extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
       break;
     }
   }
+}
+
+extension.runtime.onMessage.addListener((request) => {
+  handleMessage(request.action);
 });
 
 /**
