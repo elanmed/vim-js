@@ -1,11 +1,11 @@
 const extension = typeof browser !== "undefined" ? browser : chrome;
 
-let currTabId = null;
+let _currTabId = null;
 let prevTabId = null;
 
 extension.tabs.onActivated.addListener((activeInfo) => {
-  prevTabId = currTabId;
-  currTabId = activeInfo.tabId;
+  prevTabId = _currTabId;
+  _currTabId = activeInfo.tabId;
 });
 
 extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
@@ -16,10 +16,18 @@ extension.commands.onCommand.addListener((command) => {
   handleMessageOrCommand(command);
 });
 
+async function getCurrTabId() {
+  const [tab] = await extension.tabs.query({
+    active: true,
+    lastFocusedWindow: true,
+  });
+  return tab?.id;
+}
+
 /**
  * @param {string} messageOrCommand
  */
-function handleMessageOrCommand(messageOrCommand) {
+async function handleMessageOrCommand(messageOrCommand) {
   switch (messageOrCommand) {
     case "switch-to-prev-tab": {
       extension.tabs.get(prevTabId, (tab) => {
@@ -29,18 +37,21 @@ function handleMessageOrCommand(messageOrCommand) {
       break;
     }
     case "scroll-down": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "scroll-down",
       });
       break;
     }
     case "scroll-up": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "scroll-up",
       });
       break;
     }
     case "switch-to-right-tab": {
+      const currTabId = await getCurrTabId();
       extension.tabs.query({ currentWindow: true }, (tabs) => {
         const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
         const rightIdx = (() => {
@@ -52,6 +63,7 @@ function handleMessageOrCommand(messageOrCommand) {
       break;
     }
     case "switch-to-left-tab": {
+      const currTabId = await getCurrTabId();
       extension.tabs.query({ currentWindow: true }, (tabs) => {
         const currIdx = tabs.findIndex((tab) => tab.id === currTabId);
         const leftIdx = (() => {
@@ -75,30 +87,35 @@ function handleMessageOrCommand(messageOrCommand) {
       break;
     }
     case "scroll-to-bottom": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "scroll-to-bottom",
       });
       break;
     }
     case "scroll-to-top": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "scroll-to-top",
       });
       break;
     }
     case "copy-href-to-clipboard": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "copy-href-to-clipboard",
       });
       break;
     }
     case "seek-initiate": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "seek-initiate",
       });
       break;
     }
     case "unfocus": {
+      const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
         action: "unfocus",
       });
