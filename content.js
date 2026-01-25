@@ -163,6 +163,7 @@ function addToast(message) {
     padding: "12px",
     borderRadius: "4px",
     zIndex: "999999",
+    fontFamily: "Helvetica",
   };
 
   for (const [property, value] of Object.entries(styles)) {
@@ -272,13 +273,16 @@ function addLabelElements() {
       background: "gold",
       color: "black",
       padding: "2px",
-      opacity: "0.9",
+      opacity: "0.95",
       borderRadius: "2px",
       zIndex: "999999",
       position: "fixed",
       top: `${rect.top}px`,
       left: `${rect.left}px`,
       fontSize,
+      fontFamily: "monospace",
+      fontWeight: "600",
+      letterSpacing: "0.15em",
     };
 
     for (const [property, value] of Object.entries(styles)) {
