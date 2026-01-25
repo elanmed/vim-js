@@ -111,6 +111,7 @@ extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
     case "copy-href-to-clipboard": {
       navigator.clipboard.writeText(window.location.href);
       addToast("URL copied");
+      break;
     }
     case "scroll-down": {
       getScrollableBaseElement({ defaultBase: window }).scrollBy({
