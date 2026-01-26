@@ -57,4 +57,3 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `L`: `switch-to-last-tab`
 
 These can be updated in the local `content-keymaps.json` file.
-

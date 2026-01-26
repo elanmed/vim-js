@@ -26,5 +26,5 @@
     "command": "switch-to-last-tab"
   },
   [{ "key": "y" }, { "key": "y", "command": "copy-href-to-clipboard" }],
-  [{ "key": "g" }, { "key": "g", "command": "scroll-to-bottom" }]
+  [{ "key": "g" }, { "key": "g", "command": "scroll-to-top" }]
 ]
