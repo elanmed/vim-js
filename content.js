@@ -211,7 +211,6 @@ function handleSeek(event) {
 
   if (event.key === "Escape") {
     resetSeekState();
-    addToast("Exiting seek");
     return;
   }
 
