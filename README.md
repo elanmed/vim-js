@@ -14,16 +14,18 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 
 - `node gen-manifest.js chrome`
 - Click `Load unpacked` at `chrome://extensions/` upload the entire directory
-- Set shortcuts at `chrome://extensions/shortcuts`
+- Set extension shortcuts at `chrome://extensions/shortcuts`
 
 #### Firefox
 
 - `node gen-manifest.js firefox`
 - Click `Load Temporary Add-on` at `about:debugging#/runtime/this-firefox` and upload the `manifest.json`
 - Set `xpinstall.signatures.required` to `false` at `about:config` to persist the extension after closing firefox
-- Set shortcuts by clicking on the gear, `Manage extension shortcuts` at `about:addons`
+- Set extension shortcuts by clicking on the gear, `Manage extension shortcuts` at `about:addons`
 
 ### Supported extension keymaps
+
+> Note that extension shortcuts must include either a `ctrl`/`alt` and include several other [limitations](https://developer.chrome.com/docs/extensions/reference/api/commands#supported_keys)
 
 - `switch-to-prev-tab`
 - `scroll-down`
@@ -41,9 +43,9 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `history-back`
 - `history-forward`
 
-### Builtin Keymaps
+### Default Content Script Keymaps
 
-> For now, these can only be disabled by editing the source code
+> Note that content script keymaps are only availabe once a page is visited (i.e. not empty tabs) since they're run by a script injected into the page itself
 
 - `G`: `scroll-to-bottom`
 - `gg`: `scroll-to-top`
@@ -53,3 +55,6 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `h`: `switch-to-left-tab`
 - `H`: `switch-to-first-tab`
 - `L`: `switch-to-last-tab`
+
+These can be updated in the local `content-keymaps.json` file.
+

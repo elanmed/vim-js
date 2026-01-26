@@ -25,8 +25,7 @@ const labels = genLabels();
 
 let activeToasts = [];
 
-let firstKey = null;
-let firstKeyTimeout = null;
+let recordedKeyEvents = [];
 
 let seekActive = false;
 let seekFirstLabelKey = null;
@@ -41,8 +40,6 @@ function resetSeekState() {
   removeLabelElements();
   seekLabels = [];
 }
-
-const twoKeyKeymaps = ["gg", "yy"];
 
 document.addEventListener("scroll", () => resetSeekState());
 document.addEventListener("resize", () => resetSeekState());
@@ -59,6 +56,11 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
+  const keymaps = await getContentKeymaps();
+  const multiKeyKeymaps = keymaps.filter((keymap) => Array.isArray(keymap));
+  const singleKeyKeymaps = keymaps.filter((keymap) => !Array.isArray(keymap));
+  console.log({ multiKeyKeymaps });
+
   if (
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||
@@ -68,58 +70,40 @@ document.addEventListener("keydown", async (event) => {
   ) {
     return;
   }
+  console.log("recorded keys before", recordedKeyEvents);
 
-  if (firstKey === null) {
-    const isFirstKeyOfKeymap = twoKeyKeymaps.some((keymap) =>
-      keymap.startsWith(event.key),
+  recordedKeyEvents.push(event);
+  console.log("recorded keys after", recordedKeyEvents);
+
+  const isSubsetOfMultiKeyKeymap = multiKeyKeymaps.some((keymapArr) => {
+    console.log({ keymapArr });
+
+    if (recordedKeyEvents.length > keymapArr.length) return false;
+    return recordedKeyEvents.every((previousKeyEvent, idx) =>
+      isSameKey(keymapArr[idx], previousKeyEvent),
     );
-    if (isFirstKeyOfKeymap) {
-      firstKey = event.key;
+  });
+  console.log({ isSubsetOfMultiKeyKeymap });
 
-      firstKeyTimeout = setTimeout(() => {
-        addToast(`Clearing first key: ${firstKey}`);
-        firstKey = null;
-      }, 2000);
-      return;
-    }
-    if (event.key === "Shift") return;
+  const matchedMultiKeyKeymap = multiKeyKeymaps.find((keymapArr) => {
+    if (recordedKeyEvents.length !== keymapArr.length) return false;
+    return recordedKeyEvents.every((previousKeyEvent, idx) =>
+      isSameKey(keymapArr[idx], previousKeyEvent),
+    );
+  });
 
-    await handleSingleKeyKeymap(event);
+  if (isSubsetOfMultiKeyKeymap) {
+    if (!matchedMultiKeyKeymap) return;
+    const { command } = matchedMultiKeyKeymap[matchedMultiKeyKeymap.length - 1];
+    handleMessage(command);
   } else {
-    clearTimeout(firstKeyTimeout);
-
-    handleTwoKeyKeymap(event, firstKey);
-    firstKey = null;
+    const matchingKeymap = singleKeyKeymaps.find((keymap) =>
+      isSameKey(keymap, event),
+    );
+    if (!matchingKeymap) return;
+    extension.runtime.sendMessage({ action: matchingKeymap.command });
   }
 });
-
-/**
- * @param {KeyboardEvent} event
- */
-async function handleSingleKeyKeymap(event) {
-  const keymaps = await getContentKeymaps();
-  const matchingKeymap = keymaps.find((keymap) => isSameKey(keymap, event));
-  if (!matchingKeymap) return;
-
-  extension.runtime.sendMessage({ action: matchingKeymap.command });
-}
-
-/**
- * @param {KeyboardEvent} event
- * @param {string} firstKey
- */
-function handleTwoKeyKeymap(event, firstKey) {
-  switch (firstKey.concat(event.key)) {
-    case "gg": {
-      handleMessage("scroll-to-top");
-      break;
-    }
-    case "yy": {
-      handleMessage("copy-href-to-clipboard");
-      break;
-    }
-  }
-}
 
 /**
  * @param {string} message
