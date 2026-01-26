@@ -129,16 +129,16 @@ function handleMessage(message) {
       break;
     }
     case "scroll-to-bottom": {
-      getScrollableBaseElement({ defaultBase: window }).scrollBy({
+      getScrollableBaseElement({ defaultBase: window }).scrollTo({
         behavior: "instant",
         top: document.documentElement.scrollHeight,
       });
       break;
     }
     case "scroll-to-top": {
-      getScrollableBaseElement({ defaultBase: window }).scrollBy({
+      getScrollableBaseElement({ defaultBase: window }).scrollTo({
         behavior: "instant",
-        top: -document.documentElement.scrollHeight,
+        top: 0,
       });
       break;
     }
@@ -278,7 +278,7 @@ function addLabelElements() {
       background: "gold",
       color: "black",
       padding: "2px",
-      opacity: "0.95",
+      opacity: "0.90",
       borderRadius: "2px",
       zIndex: "999999",
       position: "fixed",
