@@ -72,24 +72,21 @@ document.addEventListener("keydown", async (event) => {
 
   recordedKeyEvents.push(event);
 
-  const isSubsetOfMultiKeyKeymap = multiKeyKeymaps.some((keymapArr) => {
+  const matchedSubsetMultiKeyKeymap = multiKeyKeymaps.find((keymapArr) => {
     if (recordedKeyEvents.length > keymapArr.length) return false;
     return recordedKeyEvents.every((previousKeyEvent, idx) =>
       isSameKey(keymapArr[idx], previousKeyEvent),
     );
   });
+  const isSubsetOfMultiKeyKeymap =
+    matchedSubsetMultiKeyKeymap &&
+    recordedKeyEvents.length < matchedSubsetMultiKeyKeymap.length;
 
-  const matchedMultiKeyKeymap = multiKeyKeymaps.find((keymapArr) => {
-    if (recordedKeyEvents.length !== keymapArr.length) return false;
-    return recordedKeyEvents.every((previousKeyEvent, idx) =>
-      isSameKey(keymapArr[idx], previousKeyEvent),
-    );
-  });
+  if (matchedSubsetMultiKeyKeymap) {
+    if (isSubsetOfMultiKeyKeymap) return;
 
-  if (isSubsetOfMultiKeyKeymap) {
-    if (!matchedMultiKeyKeymap) return;
-
-    const { command } = matchedMultiKeyKeymap[matchedMultiKeyKeymap.length - 1];
+    const { command } =
+      matchedSubsetMultiKeyKeymap[matchedSubsetMultiKeyKeymap.length - 1];
     handleMessage(command);
     recordedKeyEvents = [];
   } else {
