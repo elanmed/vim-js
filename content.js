@@ -26,6 +26,7 @@ const labels = genLabels();
 let activeToasts = [];
 
 let recordedKeyEvents = [];
+let recordingTimeout = null;
 
 let seekActive = false;
 let seekFirstLabelKey = null;
@@ -71,6 +72,7 @@ document.addEventListener("keydown", async (event) => {
   }
 
   recordedKeyEvents.push(event);
+  clearTimeout(recordingTimeout);
 
   const matchedSubsetMultiKeyKeymap = multiKeyKeymaps.find((keymapArr) => {
     if (recordedKeyEvents.length > keymapArr.length) return false;
@@ -83,11 +85,22 @@ document.addEventListener("keydown", async (event) => {
     recordedKeyEvents.length < matchedSubsetMultiKeyKeymap.length;
 
   if (matchedSubsetMultiKeyKeymap) {
-    if (isSubsetOfMultiKeyKeymap) return;
+    if (isSubsetOfMultiKeyKeymap) {
+      event.preventDefault();
+
+      recordingTimeout = setTimeout(() => {
+        addToast(
+          `Clearing recorded keys: ${recordedKeyEvents.map((keyEvent) => keyEvent.key)}`,
+        );
+        recordedKeyEvents = [];
+      }, 2000);
+      return;
+    }
 
     const { command } =
       matchedSubsetMultiKeyKeymap[matchedSubsetMultiKeyKeymap.length - 1];
     handleMessage(command);
+
     recordedKeyEvents = [];
   } else {
     recordedKeyEvents = [];
