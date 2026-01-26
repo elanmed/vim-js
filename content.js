@@ -51,7 +51,7 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
-  // TODO think of a better way to structure this
+  // TODO process all non-typeable keymaps here
   if (event.key === "Escape") {
     extension.runtime.sendMessage({ action: "unfocus" });
     return;
