@@ -42,9 +42,6 @@
     "seek-initiate": {
       "description": "Place labels on clickable elements"
     },
-    "unfocus": {
-      "description": "Unfocus the current element"
-    },
     "history-back": {
       "description": "Go back in the history stack for the current tab"
     },

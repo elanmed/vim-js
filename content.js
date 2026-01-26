@@ -51,12 +51,6 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
-  // TODO process all non-typeable keymaps here
-  if (event.key === "Escape") {
-    extension.runtime.sendMessage({ action: "unfocus" });
-    return;
-  }
-
   const keymaps = await getContentKeymaps();
   const multiKeyKeymaps = keymaps.filter((keymap) => Array.isArray(keymap));
   const singleKeyKeymaps = keymaps.filter((keymap) => !Array.isArray(keymap));
@@ -153,10 +147,6 @@ function handleMessage(message) {
         behavior: "instant",
         top: 0,
       });
-      break;
-    }
-    case "unfocus": {
-      document.activeElement.blur();
       break;
     }
   }
@@ -272,10 +262,15 @@ function addLabelElements() {
   const visibleElements = clickableElements.filter(isElementVisible);
   const elementsWithLabelText = visibleElements.map((element, idx) => {
     return {
-      labelText: labels[idx],
+      labelText: labels[idx + 1],
       clickableElement: element,
     };
   });
+  elementsWithLabelText.unshift({
+    labelText: labels[0],
+    clickableElement: document.body,
+  });
+
   elementsWithLabelText.forEach(({ clickableElement, labelText }) => {
     const rect = clickableElement.getBoundingClientRect();
 

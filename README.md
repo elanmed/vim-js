@@ -39,7 +39,6 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `copy-href-to-clipboard`
 - `seek-initiate`
   - Place labels on clickable elements on the page
-- `unfocus`
 - `history-back`
 - `history-forward`
 
@@ -50,7 +49,8 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `G`: `scroll-to-bottom`
 - `gg`: `scroll-to-top`
 - `yy`: `copy-href-to-clipboard`
-- `Escape`: `unfocus`
+- `K`: `switch-to-first-tab`
+- `J`: `switch-to-last-tab`
 
 These can be updated in the local `content-keymaps.json` file.
 

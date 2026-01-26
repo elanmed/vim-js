@@ -114,13 +114,6 @@ async function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
-    case "unfocus": {
-      const currTabId = await getCurrTabId();
-      extension.tabs.sendMessage(currTabId, {
-        action: "unfocus",
-      });
-      break;
-    }
     case "history-back": {
       extension.tabs.goBack();
       break;
