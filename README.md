@@ -51,9 +51,8 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `gg`: `scroll-to-top`
 - `yy`: `copy-href-to-clipboard`
 - `Escape`: `unfocus`
-- `l`: `switch-to-right-tab`
-- `h`: `switch-to-left-tab`
-- `H`: `switch-to-first-tab`
-- `L`: `switch-to-last-tab`
 
 These can be updated in the local `content-keymaps.json` file.
+
+<!-- ### Available ctrl remaps -->
+<!-- - bcdghijkopsuxyz -->
