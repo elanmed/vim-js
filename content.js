@@ -36,8 +36,8 @@ document.addEventListener("keydown", async (event) => {
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||
     event.target.role === "textbox" ||
-    event.target.isContentEditable ||
-    event.target.tagName === "SELECT"
+    event.target.tagName === "SELECT" ||
+    event.target.isContentEditable
   ) {
     return;
   }
@@ -116,8 +116,13 @@ async function getContentKeymaps() {
 function handleMessage(message) {
   switch (message) {
     case "seek-initiate": {
-      addLabelElements();
-      seekActive = true;
+      if (seekActive) {
+        resetSeekState();
+        return;
+      } else {
+        addLabelElements();
+        seekActive = true;
+      }
       break;
     }
     case "copy-href-to-clipboard": {
