@@ -116,6 +116,10 @@ extension.runtime.onMessage.addListener((request) => {
       }
       break;
     }
+    case "blur": {
+      document.activeElement.blur();
+      break;
+    }
     case "copy-href-to-clipboard": {
       navigator.clipboard.writeText(window.location.href);
       addToast("URL copied");

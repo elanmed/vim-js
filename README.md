@@ -47,6 +47,7 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 - `switch-to-last-tab`
 - `scroll-to-bottom`
 - `scroll-to-top`
+- `blur`
 - `copy-href-to-clipboard`
 - `history-back`
 - `history-forward`

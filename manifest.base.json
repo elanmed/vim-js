@@ -36,6 +36,9 @@
     "scroll-to-top": {
       "description": "Switch to the top of the page"
     },
+    "blur": {
+      "description": "Blur (unfocus) the current element"
+    },
     "copy-href-to-clipboard": {
       "description": "Copy the current href to the clipboard"
     },

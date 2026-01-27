@@ -100,6 +100,13 @@ async function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
+    case "blur": {
+      const currTabId = await getCurrTabId();
+      extension.tabs.sendMessage(currTabId, {
+        action: "blur",
+      });
+      break;
+    }
     case "copy-href-to-clipboard": {
       const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
