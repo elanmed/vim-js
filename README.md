@@ -27,7 +27,7 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 
 There are two kinds of keymaps in chrome extensions: command keymaps and content script keymaps.
 
-Command keymaps are first-class: they're set in a browser UI, detected by the browser itself, and can run on any page. However, content keymaps must include either a `ctrl`/`alt` and include several other [limitations](https://developer.chrome.com/docs/extensions/reference/api/commands#supported_keys).
+Command keymaps are first-class: they're set in a browser UI, detected by the browser itself, and can run on any page. However, content keymaps must include either a `ctrl`/`alt` and have several other [limitations](https://developer.chrome.com/docs/extensions/reference/api/commands#supported_keys).
 
 Content script keymaps are set up entirely by the extension author: a script is injected into the page with an event listener for certain keys. Content script keymaps can handle any key combination the browser can listen for, but they can only run on a web page - empty browser pages like new tabs can't be scripted.
 
