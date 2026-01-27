@@ -28,6 +28,7 @@ document.addEventListener("resize", () => resetSeekState());
 
 document.addEventListener("keydown", async (event) => {
   if (seekActive) {
+    event.preventDefault();
     handleSeek(event);
     return;
   }
@@ -42,6 +43,7 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
+  event.preventDefault();
   if (!keymaps) {
     keymaps = await getContentKeymaps();
   }
@@ -63,8 +65,6 @@ document.addEventListener("keydown", async (event) => {
 
   if (matchedSubsetMultiKeyKeymap) {
     if (isSubsetOfMultiKeyKeymap) {
-      event.preventDefault();
-
       recordingTimeout = setTimeout(() => {
         addToast(
           `Clearing recorded keys: ${recordedKeyEvents.map((keyEvent) => keyEvent.key)}`,
@@ -206,8 +206,6 @@ function addToast(message) {
  * @param {KeyboardEvent} event
  */
 function handleSeek(event) {
-  event.preventDefault();
-
   if (event.key === "Escape") {
     resetSeekState();
     return;
