@@ -27,6 +27,9 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 
 > Note that extension shortcuts must include either a `ctrl`/`alt` and include several other [limitations](https://developer.chrome.com/docs/extensions/reference/api/commands#supported_keys)
 
+- `seek-initiate`
+  - Overlay two character labels on clickable elements on the page. Typing the characters of a label simulates a click on the element, pressing escape or typing invalid characters cancels the operation
+  - The first label (`fj`) is always the root `document.body`
 - `switch-to-prev-tab`
 - `scroll-down`
 - `scroll-up`
@@ -37,8 +40,6 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - `scroll-to-bottom`
 - `scroll-to-top`
 - `copy-href-to-clipboard`
-- `seek-initiate`
-  - Place labels on clickable elements on the page
 - `history-back`
 - `history-forward`
 
