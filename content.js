@@ -85,6 +85,7 @@ document.addEventListener("keydown", async (event) => {
       isSameKey(keymap, event),
     );
     if (!matchingKeymap) return;
+    event.preventDefault();
     extension.runtime.sendMessage({ action: matchingKeymap.command });
   }
 });
