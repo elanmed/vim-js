@@ -23,9 +23,17 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 - Set `xpinstall.signatures.required` to `false` at `about:config` to persist the extension after closing firefox
 - Set extension shortcuts by clicking on the gear, `Manage extension shortcuts` at `about:addons`
 
-### Supported extension keymaps
+### Keymaps
 
-> Note that extension shortcuts must include either a `ctrl`/`alt` and include several other [limitations](https://developer.chrome.com/docs/extensions/reference/api/commands#supported_keys)
+There are two kinds of keymaps in chrome extensions: command keymaps and content script keymaps.
+
+Command keymaps are first-class: they're set in a browser UI, detected by the browser itself, and can run on any page. However, content keymaps must include either a `ctrl`/`alt` and include several other [limitations](https://developer.chrome.com/docs/extensions/reference/api/commands#supported_keys).
+
+Content script keymaps are set up entirely by the extension author: a script is injected into the page with an event listener for certain keys. Content script keymaps can handle any key combination the browser can listen for, but they can only run on a web page - empty browser pages like new tabs can't be scripted.
+
+All `vim-js` keymaps can be set as either a command or content script keymap. Command keymaps can be set in the browser's extension UI (see `Build` instructions) while content script keymaps can be set in a local `content-keymaps.json` file.
+
+### Supported keymaps
 
 - `seek-initiate`
   - Overlay two character labels on clickable elements on the page. Typing the characters of a label simulates a click on the element, pressing escape or typing invalid characters cancels the operation
@@ -45,13 +53,9 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 
 ### Default Content Script Keymaps
 
-> Note that content script keymaps are only availabe once a page is visited (i.e. not empty tabs) since they're run by a script injected into the page itself
-
 - `G`: `scroll-to-bottom`
 - `gg`: `scroll-to-top`
 - `yy`: `copy-href-to-clipboard`
-
-These can be updated in the local `content-keymaps.json` file.
 
 <!-- ### Available ctrl remaps -->
 <!-- - bcdghijkopsuxyz -->
@@ -61,3 +65,4 @@ These can be updated in the local `content-keymaps.json` file.
 - Better handle multiple scrolling windows
 - Better handle unfocusing
 - Better handle cases when you want to seek multiple times in a row (MutationObserver?)
+- Default command keymaps
