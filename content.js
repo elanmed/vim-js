@@ -33,15 +33,8 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
-  if (
-    event.target.tagName === "INPUT" ||
-    event.target.tagName === "TEXTAREA" ||
-    event.target.role === "textbox" ||
-    event.target.tagName === "SELECT" ||
-    event.target.isContentEditable
-  ) {
-    return;
-  }
+  // Don't need this check in background.js since all command keymaps are non-typeable
+  if (isEventTypeableChar(event) && isEventInTypeableElement(event)) return;
 
   if (!keymaps) {
     keymaps = await getContentKeymaps();
@@ -413,5 +406,31 @@ function isSameKey(keymap, event) {
     event.metaKey === (keymap.metaKey ?? false) &&
     event.shiftKey === (keymap.shiftKey ?? false) &&
     event.key === keymap.key
+  );
+}
+
+/**
+ * @param {KeyboardEvent} event
+ */
+function isEventTypeableChar(event) {
+  if (event.altKey || event.ctrlKey || event.metaKey) return false;
+
+  const lowerCase = "abcdefghijklmnopqrstubwxyz";
+  const upperCase = lowerCase.toUpperCase();
+  const numbers = "0123456789";
+  const punc = "`~!@#$%^&*()-=_+[]{};':\",./<>?";
+  return `${lowerCase}${upperCase}${numbers}${punc}`.includes(event.key);
+}
+
+/**
+ * @param {KeyboardEvent} event
+ */
+function isEventInTypeableElement(event) {
+  return (
+    event.target.tagName === "INPUT" ||
+    event.target.tagName === "TEXTAREA" ||
+    event.target.role === "textbox" ||
+    event.target.tagName === "SELECT" ||
+    event.target.isContentEditable
   );
 }
