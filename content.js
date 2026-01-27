@@ -75,10 +75,8 @@ document.addEventListener("keydown", async (event) => {
       return;
     }
 
-    const { command } =
-      matchedSubsetMultiKeyKeymap[matchedSubsetMultiKeyKeymap.length - 1];
-    // TODO: support background.js keymaps from content-keymaps.json
-    handleMessage(command);
+    const { command } = matchedSubsetMultiKeyKeymap.at(-1);
+    extension.runtime.sendMessage({ action: command });
 
     recordedKeyEvents = [];
   } else {
@@ -112,11 +110,8 @@ async function getContentKeymaps() {
   return data;
 }
 
-/**
- * @param {string} message
- */
-function handleMessage(message) {
-  switch (message) {
+extension.runtime.onMessage.addListener((request) => {
+  switch (request.action) {
     case "seek-initiate": {
       if (seekActive) {
         resetSeekState();
@@ -161,10 +156,6 @@ function handleMessage(message) {
       break;
     }
   }
-}
-
-extension.runtime.onMessage.addListener((request) => {
-  handleMessage(request.action);
 });
 
 /**
