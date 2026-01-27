@@ -22,6 +22,7 @@ async function getContentKeymaps() {
 }
 
 const labels = genLabels();
+let keymaps = null;
 
 let activeToasts = [];
 
@@ -51,10 +52,6 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
-  const keymaps = await getContentKeymaps();
-  const multiKeyKeymaps = keymaps.filter((keymap) => Array.isArray(keymap));
-  const singleKeyKeymaps = keymaps.filter((keymap) => !Array.isArray(keymap));
-
   if (
     event.target.tagName === "INPUT" ||
     event.target.tagName === "TEXTAREA" ||
@@ -64,6 +61,12 @@ document.addEventListener("keydown", async (event) => {
   ) {
     return;
   }
+
+  if (!keymaps) {
+    keymaps = await getContentKeymaps();
+  }
+  const multiKeyKeymaps = keymaps.filter((keymap) => Array.isArray(keymap));
+  const singleKeyKeymaps = keymaps.filter((keymap) => !Array.isArray(keymap));
 
   recordedKeyEvents.push(event);
   clearTimeout(recordingTimeout);
