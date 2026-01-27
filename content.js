@@ -43,7 +43,6 @@ document.addEventListener("keydown", async (event) => {
     return;
   }
 
-  event.preventDefault();
   if (!keymaps) {
     keymaps = await getContentKeymaps();
   }
@@ -65,6 +64,8 @@ document.addEventListener("keydown", async (event) => {
 
   if (matchedSubsetMultiKeyKeymap) {
     if (isSubsetOfMultiKeyKeymap) {
+      event.preventDefault();
+
       recordingTimeout = setTimeout(() => {
         addToast(
           `Clearing recorded keys: ${recordedKeyEvents.map((keyEvent) => keyEvent.key)}`,
@@ -76,6 +77,7 @@ document.addEventListener("keydown", async (event) => {
 
     const { command } =
       matchedSubsetMultiKeyKeymap[matchedSubsetMultiKeyKeymap.length - 1];
+    // TODO: support background.js keymaps from content-keymaps.json
     handleMessage(command);
 
     recordedKeyEvents = [];
