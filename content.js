@@ -1,27 +1,7 @@
 const extension = typeof browser === "undefined" ? chrome : browser;
 
-async function getContentKeymaps() {
-  const url = chrome.runtime.getURL("content-keymaps.json");
-  let response;
-  try {
-    response = await fetch(url);
-  } catch (e) {
-    addToast(`Error fetching content-keymaps.json: ${JSON.stringify(e)}`);
-    return [];
-  }
-
-  let data;
-  try {
-    data = await response.json();
-  } catch (e) {
-    addToast(`Error parsing content-keymaps.json: ${JSON.stringify(e)}`);
-    return [];
-  }
-
-  return data;
-}
-
 const labels = genLabels();
+
 let keymaps = null;
 
 let activeToasts = [];
@@ -108,6 +88,27 @@ document.addEventListener("keydown", async (event) => {
     extension.runtime.sendMessage({ action: matchingKeymap.command });
   }
 });
+
+async function getContentKeymaps() {
+  const url = chrome.runtime.getURL("content-keymaps.json");
+  let response;
+  try {
+    response = await fetch(url);
+  } catch (e) {
+    addToast(`Error fetching content-keymaps.json: ${JSON.stringify(e)}`);
+    return [];
+  }
+
+  let data;
+  try {
+    data = await response.json();
+  } catch (e) {
+    addToast(`Error parsing content-keymaps.json: ${JSON.stringify(e)}`);
+    return [];
+  }
+
+  return data;
+}
 
 /**
  * @param {string} message
