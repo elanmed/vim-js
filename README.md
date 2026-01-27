@@ -55,3 +55,9 @@ These can be updated in the local `content-keymaps.json` file.
 
 <!-- ### Available ctrl remaps -->
 <!-- - bcdghijkopsuxyz -->
+
+### TODO
+
+- Better handle multiple scrolling windows
+- Better handle unfocusing
+- Better handle cases when you want to seek multiple times in a row (MutationObserver?)
