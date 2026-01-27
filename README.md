@@ -57,6 +57,7 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 - `G`: `scroll-to-bottom`
 - `gg`: `scroll-to-top`
 - `yy`: `copy-href-to-clipboard`
+- `Escape`: `blur`
 
 <!-- ### Available ctrl remaps -->
 <!-- - bcdghijkopsuxyz -->
@@ -64,6 +65,5 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 ### TODO
 
 - Better handle multiple scrolling windows
-- Better handle unfocusing
 - Better handle cases when you want to seek multiple times in a row (MutationObserver?)
 - Default command keymaps
