@@ -66,4 +66,3 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 
 - Better handle multiple scrolling windows
 - Better handle cases when you want to seek multiple times in a row (MutationObserver?)
-- Default command keymaps

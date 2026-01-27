@@ -13,10 +13,16 @@
       "description": "Switch to the previous tab"
     },
     "scroll-down": {
-      "description": "Scroll down by a half-page"
+      "description": "Scroll down by a half-page",
+      "suggested_key": {
+        "default": "Ctrl+D"
+      }
     },
     "scroll-up": {
-      "description": "Scroll up by a half-page"
+      "description": "Scroll up by a half-page",
+      "suggested_key": {
+        "default": "Ctrl+U"
+      }
     },
     "switch-to-right-tab": {
       "description": "Switch to the tab to the right"
@@ -46,10 +52,16 @@
       "description": "Place labels on clickable elements"
     },
     "history-back": {
-      "description": "Go back in the history stack for the current tab"
+      "description": "Go back in the history stack for the current tab",
+      "suggested_key": {
+        "default": "Ctrl+O"
+      }
     },
     "history-forward": {
-      "description": "Go forward in the history stack for the current tab"
+      "description": "Go forward in the history stack for the current tab",
+      "suggested_key": {
+        "default": "Ctrl+I"
+      }
     }
   }
 }
