@@ -230,7 +230,6 @@ function handleSeek(event) {
     domObserver.observe(document.body, {
       childList: true,
       subtree: true,
-      attributes: true,
     });
 
     selectedLabel.clickableElement.focus();
