@@ -36,8 +36,8 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 ### Supported keymaps
 
 - `toggle-label-click`
-  - Overlay two character labels on clickable elements on the page, typing the characters of a label simulates a click on the element
-  - DOM changes retrigger the labels, allowing multiple sequential clicks. The labels can be removed by executing `toggle-label-click` again
+  - Overlays two character labels on clickable elements on the page, typing the characters of a label simulates a click on the element
+  - DOM changes retrigger the labels allowing multiple sequential clicks. The labels can be removed at any time by re-executing `toggle-label-click`
   - The first label (`fj`) is always the root `document.body`
 - `switch-to-prev-tab`
 - `scroll-down`
