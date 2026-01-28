@@ -109,7 +109,6 @@ extension.runtime.onMessage.addListener((request) => {
     case "seek-initiate": {
       if (seekActive) {
         resetSeekState();
-        return;
       } else {
         addLabelElements();
         seekActive = true;
