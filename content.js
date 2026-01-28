@@ -14,8 +14,7 @@ let seekFirstLabelKey = null;
 let seekSecondLabelKey = null;
 let seekLabels = [];
 
-function resetSeekState() {
-  seekActive = false;
+function resetSeekLabelsAndKeys() {
   seekFirstLabelKey = null;
   seekSecondLabelKey = null;
 
@@ -23,11 +22,13 @@ function resetSeekState() {
   seekLabels = [];
 }
 
-document.addEventListener("scroll", () => resetSeekState());
-document.addEventListener("resize", () => resetSeekState());
+document.addEventListener("scroll", () => resetSeekLabelsAndKeys());
+document.addEventListener("resize", () => resetSeekLabelsAndKeys());
 
 document.addEventListener("keydown", async (event) => {
   if (seekActive) {
+    if (!isEventTypeableChar(event)) return;
+
     event.preventDefault();
     handleSeek(event);
     return;
@@ -106,9 +107,10 @@ async function getContentKeymaps() {
 
 extension.runtime.onMessage.addListener((request) => {
   switch (request.action) {
-    case "seek-initiate": {
+    case "toggle-label-click": {
       if (seekActive) {
-        resetSeekState();
+        resetSeekLabelsAndKeys();
+        seekActive = false;
       } else {
         addLabelElements();
         seekActive = true;
@@ -196,11 +198,6 @@ function addToast(message) {
  * @param {KeyboardEvent} event
  */
 function handleSeek(event) {
-  if (event.key === "Escape") {
-    resetSeekState();
-    return;
-  }
-
   if (seekFirstLabelKey) {
     seekSecondLabelKey = event.key;
     const selectedLabelText = seekFirstLabelKey.concat(event.key);
@@ -214,10 +211,25 @@ function handleSeek(event) {
       return;
     }
 
+    let observerTimeout = null;
+    const domObserver = new MutationObserver((_mutationList, observer) => {
+      clearTimeout(observerTimeout);
+      observerTimeout = setTimeout(() => {
+        resetSeekLabelsAndKeys();
+        addLabelElements();
+
+        observer.disconnect();
+      }, 500);
+    });
+
+    domObserver.observe(document.body, {
+      childList: true,
+      subtree: true,
+      attributes: true,
+    });
+
     selectedLabel.clickableElement.focus();
     selectedLabel.clickableElement.click();
-
-    resetSeekState();
   } else {
     const labelTexts = seekLabels.map(({ labelText }) => labelText);
     if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {

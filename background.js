@@ -114,10 +114,10 @@ async function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
-    case "seek-initiate": {
+    case "toggle-label-click": {
       const currTabId = await getCurrTabId();
       extension.tabs.sendMessage(currTabId, {
-        action: "seek-initiate",
+        action: "toggle-label-click",
       });
       break;
     }

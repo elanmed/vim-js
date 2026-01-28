@@ -35,8 +35,9 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 
 ### Supported keymaps
 
-- `seek-initiate`
-  - Overlay two character labels on clickable elements on the page. Typing the characters of a label simulates a click on the element, pressing escape cancels the operation
+- `toggle-label-click`
+  - Overlay two character labels on clickable elements on the page, typing the characters of a label simulates a click on the element
+  - DOM changes retrigger the labels, allowing multiple sequential clicks. The labels can be removed by executing `toggle-label-click` again
   - The first label (`fj`) is always the root `document.body`
 - `switch-to-prev-tab`
 - `scroll-down`
@@ -73,6 +74,3 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
     - If doc scrollable, scroll
     - If doc not scrollable
       - Label scrollable areas, on select focus
-
-- Better handle cases when you want to seek multiple times in a row
-  - Create a new `toggle-seek`, only disable seek when toggling, refresh on DOM changes
