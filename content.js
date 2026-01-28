@@ -223,7 +223,7 @@ function handleSeek(event) {
         }
 
         resetSeekLabelsAndKeys();
-        seekLabelColor = seekLabelColor === "gold" ? "lightpink" : "gold";
+        seekLabelColor = seekLabelColor === "gold" ? "lightgreen" : "gold";
         addLabelElements();
 
         observer.disconnect();
