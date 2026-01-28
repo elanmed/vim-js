@@ -35,7 +35,7 @@ document.addEventListener("keydown", async (event) => {
   }
 
   // Don't need this check in background.js since all command keymaps are non-typeable
-  if (isEventTypeableChar(event) && isEventInTypeableElement(event)) return;
+  if (isEventTypeableChar(event) && isTypeableElement(event.target)) return;
 
   if (!keymaps) {
     keymaps = await getContentKeymaps();
@@ -232,6 +232,10 @@ function handleSeek(event) {
 
     selectedLabel.clickableElement.focus();
     selectedLabel.clickableElement.click();
+    if (isTypeableElement(selectedLabel.clickableElement)) {
+      seekActive = false;
+      addToast("Disabling seek");
+    }
     resetSeekLabelsAndKeys();
   } else {
     const labelTexts = seekLabels.map(({ labelText }) => labelText);
@@ -440,15 +444,12 @@ function isEventTypeableChar(event) {
   return `${lowerCase}${upperCase}${numbers}${punc}`.includes(event.key);
 }
 
-/**
- * @param {KeyboardEvent} event
- */
-function isEventInTypeableElement(event) {
+function isTypeableElement(element) {
   return (
-    event.target.tagName === "INPUT" ||
-    event.target.tagName === "TEXTAREA" ||
-    event.target.role === "textbox" ||
-    event.target.tagName === "SELECT" ||
-    event.target.isContentEditable
+    element.tagName === "INPUT" ||
+    element.tagName === "TEXTAREA" ||
+    element.role === "textbox" ||
+    element.tagName === "SELECT" ||
+    element.isContentEditable
   );
 }
