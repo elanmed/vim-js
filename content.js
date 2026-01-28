@@ -272,12 +272,14 @@ function addLabelElements() {
     baseElement.querySelectorAll(clickableSelectors.join(", ")),
   );
   const visibleElements = clickableElements.filter(isElementVisible);
-  const elementsWithLabelText = visibleElements.map((element, idx) => {
-    return {
-      labelText: labels[idx + 1],
-      clickableElement: element,
-    };
-  });
+  const elementsWithLabelText = visibleElements
+    .slice(0, labels.length)
+    .map((element, idx) => {
+      return {
+        labelText: labels[idx + 1],
+        clickableElement: element,
+      };
+    });
   elementsWithLabelText.unshift({
     labelText: labels[0],
     clickableElement: document.body,
