@@ -215,6 +215,11 @@ function handleSeek(event) {
     const domObserver = new MutationObserver((_mutationList, observer) => {
       clearTimeout(observerTimeout);
       observerTimeout = setTimeout(() => {
+        if (!seekActive) {
+          observer.disconnect();
+          return;
+        }
+
         resetSeekLabelsAndKeys();
         addLabelElements();
 
