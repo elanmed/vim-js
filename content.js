@@ -209,7 +209,8 @@ function handleSeek(event) {
     );
     if (!selectedLabel) {
       addToast("Invalid label");
-      resetSeekState();
+      seekFirstLabelKey = null;
+      seekSecondLabelKey = null;
       return;
     }
 
@@ -218,15 +219,12 @@ function handleSeek(event) {
 
     resetSeekState();
   } else {
-    seekFirstLabelKey = event.key;
     const labelTexts = seekLabels.map(({ labelText }) => labelText);
-    if (
-      !labelTexts.some((labelText) => labelText.startsWith(seekFirstLabelKey))
-    ) {
+    if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
       addToast("Invalid label");
-      resetSeekState();
       return;
     }
+    seekFirstLabelKey = event.key;
   }
 }
 

@@ -36,7 +36,7 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 ### Supported keymaps
 
 - `seek-initiate`
-  - Overlay two character labels on clickable elements on the page. Typing the characters of a label simulates a click on the element, pressing escape or typing invalid characters cancels the operation
+  - Overlay two character labels on clickable elements on the page. Typing the characters of a label simulates a click on the element, pressing escape cancels the operation
   - The first label (`fj`) is always the root `document.body`
 - `switch-to-prev-tab`
 - `scroll-down`
