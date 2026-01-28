@@ -30,6 +30,8 @@ async function getCurrTabId() {
 async function handleMessageOrCommand(messageOrCommand) {
   switch (messageOrCommand) {
     case "switch-to-prev-tab": {
+      if (!prevTabId) break;
+
       extension.tabs.get(prevTabId, (tab) => {
         extension.windows.update(tab.windowId, { focused: true });
         extension.tabs.update(prevTabId, { active: true });
