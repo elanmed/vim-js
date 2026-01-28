@@ -1,6 +1,7 @@
 const extension = typeof browser === "undefined" ? chrome : browser;
 
 const labels = genLabels();
+let seekLabelColor = "gold";
 
 let keymaps = null;
 
@@ -112,6 +113,7 @@ extension.runtime.onMessage.addListener((request) => {
         resetSeekLabelsAndKeys();
         seekActive = false;
       } else {
+        seekLabelColor = "gold";
         addLabelElements();
         seekActive = true;
       }
@@ -221,6 +223,7 @@ function handleSeek(event) {
         }
 
         resetSeekLabelsAndKeys();
+        seekLabelColor = seekLabelColor === "gold" ? "lightcoral" : "gold";
         addLabelElements();
 
         observer.disconnect();
@@ -295,7 +298,7 @@ function addLabelElements() {
     labelElement.textContent = labelText;
     const styles = {
       lineHeight: "1",
-      background: "gold",
+      background: seekLabelColor,
       color: "black",
       padding: "2px",
       opacity: "0.90",
