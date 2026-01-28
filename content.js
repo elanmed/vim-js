@@ -1,7 +1,6 @@
 const extension = typeof browser === "undefined" ? chrome : browser;
 
 const labels = genLabels();
-let seekLabelColor = "gold";
 
 let keymaps = null;
 
@@ -113,7 +112,6 @@ extension.runtime.onMessage.addListener((request) => {
         resetSeekLabelsAndKeys();
         seekActive = false;
       } else {
-        seekLabelColor = "gold";
         addLabelElements();
         seekActive = true;
       }
@@ -201,7 +199,6 @@ function addToast(message) {
  */
 function handleSeek(event) {
   if (seekFirstLabelKey) {
-    seekSecondLabelKey = event.key;
     const selectedLabelText = seekFirstLabelKey.concat(event.key);
     const selectedLabel = seekLabels.find(
       ({ labelText }) => labelText === selectedLabelText,
@@ -209,9 +206,9 @@ function handleSeek(event) {
     if (!selectedLabel) {
       addToast("Invalid label");
       seekFirstLabelKey = null;
-      seekSecondLabelKey = null;
       return;
     }
+    seekSecondLabelKey = event.key;
 
     let observerTimeout = null;
     const domObserver = new MutationObserver((_mutationList, observer) => {
@@ -222,8 +219,6 @@ function handleSeek(event) {
           return;
         }
 
-        resetSeekLabelsAndKeys();
-        seekLabelColor = seekLabelColor === "gold" ? "lightgreen" : "gold";
         addLabelElements();
 
         observer.disconnect();
@@ -237,6 +232,7 @@ function handleSeek(event) {
 
     selectedLabel.clickableElement.focus();
     selectedLabel.clickableElement.click();
+    resetSeekLabelsAndKeys();
   } else {
     const labelTexts = seekLabels.map(({ labelText }) => labelText);
     if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
@@ -298,7 +294,7 @@ function addLabelElements() {
     labelElement.textContent = labelText;
     const styles = {
       lineHeight: "1",
-      background: seekLabelColor,
+      background: "gold",
       color: "black",
       padding: "2px",
       opacity: "0.90",
