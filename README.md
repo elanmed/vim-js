@@ -65,4 +65,14 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 ### TODO
 
 - Better handle multiple scrolling windows
-- Better handle cases when you want to seek multiple times in a row (MutationObserver?)
+  - If modal:
+    - If scrollable, scroll
+    - If not scrollable, return
+  - If not modal:
+    - If focused scrollable, scroll
+    - If doc scrollable, scroll
+    - If doc not scrollable
+      - Label scrollable areas, on select focus
+
+- Better handle cases when you want to seek multiple times in a row
+  - Create a new `toggle-seek`, only disable seek when toggling, refresh on DOM changes
