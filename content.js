@@ -335,7 +335,6 @@ function addLabelElements() {
     scrollableElements.forEach((element) => {
       if (!element.hasAttribute("tabindex")) {
         element.setAttribute("tabindex", "-1");
-        element.dataset.addedTabindex = "true";
       }
     });
 
