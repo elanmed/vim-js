@@ -15,6 +15,19 @@ let seekFirstLabelKey = null;
 let seekSecondLabelKey = null;
 let seekLabels = [];
 
+/**
+ * @param { "click" | "focus" } mode
+ */
+function activateSeek(mode) {
+  seekMode = mode;
+  addLabelElements();
+}
+
+function deactivateSeek() {
+  resetSeekLabelsAndKeys();
+  seekMode = "off";
+}
+
 function isSeekActive() {
   return seekMode === "focus" || seekMode === "click";
 }
@@ -115,21 +128,17 @@ extension.runtime.onMessage.addListener((request) => {
   switch (request.action) {
     case "toggle-label-click": {
       if (isSeekActive()) {
-        resetSeekLabelsAndKeys();
-        seekMode = "off";
+        deactivateSeek();
       } else {
-        seekMode = "click";
-        addLabelElements();
+        activateSeek("click");
       }
       break;
     }
     case "toggle-label-focus": {
       if (isSeekActive()) {
-        resetSeekLabelsAndKeys();
-        seekMode = "off";
+        deactivateSeek();
       } else {
-        seekMode = "focus";
-        addLabelElements();
+        activateSeek("focus");
       }
       break;
     }
@@ -259,8 +268,12 @@ function handleSeek(event) {
       selectedLabel.clickableElement.click();
 
       if (isTypeableElement(selectedLabel.clickableElement)) {
-        seekMode = "off";
+        deactivateSeek();
         addToast("Disabling seek");
+        return;
+      } else {
+        resetSeekLabelsAndKeys();
+        return;
       }
     }
 
@@ -270,18 +283,17 @@ function handleSeek(event) {
         scrollPageCallback(scrollableParent);
         scrollPageCallback = null;
       }
-      seekMode = "off";
-    }
-
-    resetSeekLabelsAndKeys();
-  } else {
-    const labelTexts = seekLabels.map(({ labelText }) => labelText);
-    if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
-      addToast("Invalid label");
+      deactivateSeek();
       return;
     }
-    seekFirstLabelKey = event.key;
   }
+
+  const labelTexts = seekLabels.map(({ labelText }) => labelText);
+  if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
+    addToast("Invalid label");
+    return;
+  }
+  seekFirstLabelKey = event.key;
 }
 
 function addLabelElements() {
@@ -452,8 +464,7 @@ function scrollPage(callback) {
   scrollPageCallback = callback;
 
   if (isSeekActive()) {
-    resetSeekLabelsAndKeys();
-    seekMode = "off";
+    deactivateSeek();
     return;
   }
 
@@ -474,8 +485,7 @@ function scrollPage(callback) {
     return;
   }
 
-  seekMode = "focus";
-  addLabelElements();
+  activateSeek("focus");
 }
 
 /**

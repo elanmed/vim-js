@@ -8,7 +8,7 @@ extension.tabs.onActivated.addListener((activeInfo) => {
   _currTabId = activeInfo.tabId;
 });
 
-extension.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+extension.runtime.onMessage.addListener((request) => {
   handleMessageOrCommand(request.action);
 });
 
@@ -16,6 +16,7 @@ extension.commands.onCommand.addListener((command) => {
   handleMessageOrCommand(command);
 });
 
+// Relying on _currTabId seemed flakey, TODO investigate
 async function getCurrTabId() {
   const [tab] = await extension.tabs.query({
     active: true,
