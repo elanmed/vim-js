@@ -9,10 +9,14 @@ let activeToasts = [];
 let recordedKeyEvents = [];
 let recordingTimeout = null;
 
-let seekActive = false;
+let seekMode = "off";
 let seekFirstLabelKey = null;
 let seekSecondLabelKey = null;
 let seekLabels = [];
+
+function isSeekActive() {
+  return seekMode === "focus" || seekMode === "click";
+}
 
 function resetSeekLabelsAndKeys() {
   seekFirstLabelKey = null;
@@ -26,7 +30,7 @@ document.addEventListener("scroll", () => resetSeekLabelsAndKeys());
 document.addEventListener("resize", () => resetSeekLabelsAndKeys());
 
 document.addEventListener("keydown", async (event) => {
-  if (seekActive) {
+  if (isSeekActive()) {
     if (!isEventTypeableChar(event)) return;
 
     event.preventDefault();
@@ -108,12 +112,12 @@ async function getContentKeymaps() {
 extension.runtime.onMessage.addListener((request) => {
   switch (request.action) {
     case "toggle-label-click": {
-      if (seekActive) {
+      if (isSeekActive()) {
         resetSeekLabelsAndKeys();
-        seekActive = false;
+        seekMode = "off";
       } else {
+        seekMode = "click";
         addLabelElements();
-        seekActive = true;
       }
       break;
     }
@@ -222,7 +226,7 @@ function handleSeek(event) {
     const domObserver = new MutationObserver((_mutationList, observer) => {
       clearTimeout(observerTimeout);
       observerTimeout = setTimeout(() => {
-        if (!seekActive) {
+        if (!isSeekActive()) {
           observer.disconnect();
           return;
         }
@@ -239,11 +243,19 @@ function handleSeek(event) {
     });
 
     selectedLabel.clickableElement.focus();
-    selectedLabel.clickableElement.click();
-    if (isTypeableElement(selectedLabel.clickableElement)) {
-      seekActive = false;
-      addToast("Disabling seek");
+    if (seekMode === "click") {
+      selectedLabel.clickableElement.click();
+
+      if (isTypeableElement(selectedLabel.clickableElement)) {
+        seekMode = "off";
+        addToast("Disabling seek");
+      }
     }
+
+    if (seekMode === "focus") {
+      seekMode = "off";
+    }
+
     resetSeekLabelsAndKeys();
   } else {
     const labelTexts = seekLabels.map(({ labelText }) => labelText);
@@ -306,7 +318,7 @@ function addLabelElements() {
     labelElement.textContent = labelText;
     const styles = {
       lineHeight: "1",
-      background: "gold",
+      background: seekMode === "click" ? "gold" : "lightgreen",
       color: "black",
       padding: "2px",
       opacity: "0.90",
@@ -405,26 +417,42 @@ function getFirstScrollableChild(element) {
 }
 
 /**
+ * @param {Element} element
+ */
+function getFirstScrollableParent(element) {
+  if (!element) return null;
+
+  if (isElementScrollable(element)) return element;
+  return getFirstScrollableParent(element.parentElement);
+}
+
+/**
  * @param {(element: Element) => void} callback
  */
 function scrollPage(callback) {
+  if (isSeekActive()) {
+    resetSeekLabelsAndKeys();
+    seekMode = "off";
+    return;
+  }
+
   const modalElement = getModalElement();
   if (modalElement) {
-    if (getFirstScrollableChild(modalElement)) {
-      callback(modalElement);
+    const scrollableChild = getFirstScrollableChild(modalElement);
+    if (scrollableChild) {
+      callback(scrollableChild);
     }
     return;
   }
 
-  if (isElementScrollable(document.activeElement)) {
-    callback(document.activeElement);
+  const scrollableParent = getFirstScrollableParent(document.activeElement);
+  if (scrollableParent) {
+    callback(scrollableParent);
     return;
   }
 
-  if (isElementScrollable(document.documentElement)) {
-    callback(document.documentElement);
-    return;
-  }
+  seekMode = "focus";
+  addLabelElements();
 }
 
 /**
