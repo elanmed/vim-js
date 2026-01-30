@@ -49,7 +49,10 @@
       "description": "Copy the current href to the clipboard"
     },
     "toggle-label-click": {
-      "description": "Place labels on clickable elements"
+      "description": "Place labels on clickable elements to click"
+    },
+    "toggle-label-focus": {
+      "description": "Place labels on clickable elements to focus"
     },
     "history-back": {
       "description": "Go back in the history stack for the current tab",

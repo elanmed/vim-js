@@ -39,13 +39,15 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
   - Overlays two character labels on clickable elements on the page, typing the characters of a label simulates a click on the element
   - DOM changes retrigger the labels allowing multiple sequential clicks. The labels can be removed at any time by re-executing `toggle-label-click`
   - The first label (`fj`) is always the root `document.body`
+- `toggle-label-focus`
+  - The same as `toggle-label-click` but focuses the selected element
 - `scroll-down`
 - `scroll-up`
 - `scroll-to-bottom`
 - `scroll-to-top`
   - All scroll actions first check if a modal is open - if yes, scroll within it.
   - If no modal is present but the currently focused element has a scrollable parent, that parent is scrolled.
-  - Otherwise, the scroll action enters focus mode: labels overlay focusable elements, selecting one focuses it and scrolls its scrollable parent (if present)
+  - Otherwise, `toggle-label-focus` is triggered, selecting a label focuses the element and scrolls its scrollable parent (if present)
 - `switch-to-prev-tab`
 - `switch-to-right-tab`
 - `switch-to-left-tab`
@@ -65,15 +67,3 @@ All `vim-js` keymaps can be set as either a command or content script keymap. Co
 
 <!-- ### Available ctrl remaps -->
 <!-- - bcdghijkopsuxyz -->
-
-### TODO
-
-- Better handle multiple scrolling windows
-  - If modal:
-    - If scrollable, scroll
-    - If not scrollable, return
-  - If not modal:
-    - If focused scrollable, scroll
-    - If doc scrollable, scroll
-    - If doc not scrollable
-      - Label scrollable areas, on select focus

@@ -123,6 +123,13 @@ async function handleMessageOrCommand(messageOrCommand) {
       });
       break;
     }
+    case "toggle-label-focus": {
+      const currTabId = await getCurrTabId();
+      extension.tabs.sendMessage(currTabId, {
+        action: "toggle-label-focus",
+      });
+      break;
+    }
     case "history-back": {
       extension.tabs.goBack();
       break;

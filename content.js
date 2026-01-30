@@ -123,6 +123,16 @@ extension.runtime.onMessage.addListener((request) => {
       }
       break;
     }
+    case "toggle-label-focus": {
+      if (isSeekActive()) {
+        resetSeekLabelsAndKeys();
+        seekMode = "off";
+      } else {
+        seekMode = "focus";
+        addLabelElements();
+      }
+      break;
+    }
     case "blur": {
       document.activeElement.blur();
       break;
@@ -256,8 +266,9 @@ function handleSeek(event) {
 
     if (seekMode === "focus") {
       const scrollableParent = getFirstScrollableParent(document.activeElement);
-      if (scrollableParent) {
+      if (scrollableParent && scrollPageCallback) {
         scrollPageCallback(scrollableParent);
+        scrollPageCallback = null;
       }
       seekMode = "off";
     }
