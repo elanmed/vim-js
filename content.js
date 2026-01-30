@@ -9,6 +9,7 @@ let activeToasts = [];
 let recordedKeyEvents = [];
 let recordingTimeout = null;
 
+let scrollPageCallback = null;
 let seekMode = "off";
 let seekFirstLabelKey = null;
 let seekSecondLabelKey = null;
@@ -61,9 +62,9 @@ document.addEventListener("keydown", async (event) => {
     recordedKeyEvents.length < matchedSubsetMultiKeyKeymap.length;
 
   if (matchedSubsetMultiKeyKeymap) {
-    if (isSubsetOfMultiKeyKeymap) {
-      event.preventDefault();
+    event.preventDefault();
 
+    if (isSubsetOfMultiKeyKeymap) {
       recordingTimeout = setTimeout(() => {
         addToast(
           `Clearing recorded keys: ${recordedKeyEvents.map((keyEvent) => keyEvent.key)}`,
@@ -83,6 +84,7 @@ document.addEventListener("keydown", async (event) => {
       isSameKey(keymap, event),
     );
     if (!matchingKeymap) return;
+
     event.preventDefault();
     extension.runtime.sendMessage({ action: matchingKeymap.command });
   }
@@ -253,6 +255,10 @@ function handleSeek(event) {
     }
 
     if (seekMode === "focus") {
+      const scrollableParent = getFirstScrollableParent(document.activeElement);
+      if (scrollableParent) {
+        scrollPageCallback(scrollableParent);
+      }
       seekMode = "off";
     }
 
@@ -430,6 +436,8 @@ function getFirstScrollableParent(element) {
  * @param {(element: Element) => void} callback
  */
 function scrollPage(callback) {
+  scrollPageCallback = callback;
+
   if (isSeekActive()) {
     resetSeekLabelsAndKeys();
     seekMode = "off";
