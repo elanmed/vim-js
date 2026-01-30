@@ -127,30 +127,38 @@ extension.runtime.onMessage.addListener((request) => {
       break;
     }
     case "scroll-down": {
-      getScrollableBaseElement().scrollBy({
-        behavior: "smooth",
-        top: Math.floor(window.innerHeight / 2),
+      scrollPage((el) => {
+        el.scrollBy({
+          behavior: "smooth",
+          top: Math.floor(window.innerHeight / 2),
+        });
       });
       break;
     }
     case "scroll-up": {
-      getScrollableBaseElement().scrollBy({
-        behavior: "smooth",
-        top: -Math.floor(window.innerHeight / 2),
+      scrollPage((el) => {
+        el.scrollBy({
+          behavior: "smooth",
+          top: -Math.floor(window.innerHeight / 2),
+        });
       });
       break;
     }
     case "scroll-to-bottom": {
-      getScrollableBaseElement().scrollTo({
-        behavior: "instant",
-        top: document.documentElement.scrollHeight,
+      scrollPage((el) => {
+        el.scrollTo({
+          behavior: "instant",
+          top: el.scrollHeight,
+        });
       });
       break;
     }
     case "scroll-to-top": {
-      getScrollableBaseElement().scrollTo({
-        behavior: "instant",
-        top: 0,
+      scrollPage((el) => {
+        el.scrollTo({
+          behavior: "instant",
+          top: 0,
+        });
       });
       break;
     }
@@ -284,7 +292,7 @@ function addLabelElements() {
     });
   elementsWithLabelText.unshift({
     labelText: labels[0],
-    clickableElement: document.body,
+    clickableElement: document.documentElement,
   });
 
   elementsWithLabelText.forEach(({ clickableElement, labelText }) => {
@@ -393,18 +401,30 @@ function getFirstScrollableChild(element) {
     const scrollableChild = getFirstScrollableChild(child);
     if (scrollableChild) return scrollableChild;
   }
-  return undefined;
+  return null;
 }
 
 /**
- * @param {Object} params
- * @param {Element} params.defaultBase
+ * @param {(element: Element) => void} callback
  */
-function getScrollableBaseElement() {
-  const baseElement = getModalElement();
-  if (!baseElement) return window;
+function scrollPage(callback) {
+  const modalElement = getModalElement();
+  if (modalElement) {
+    if (getFirstScrollableChild(modalElement)) {
+      callback(modalElement);
+    }
+    return;
+  }
 
-  return getFirstScrollableChild(baseElement);
+  if (isElementScrollable(document.activeElement)) {
+    callback(document.activeElement);
+    return;
+  }
+
+  if (isElementScrollable(document.documentElement)) {
+    callback(document.documentElement);
+    return;
+  }
 }
 
 /**
