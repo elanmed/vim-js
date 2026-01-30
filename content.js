@@ -267,11 +267,11 @@ function handleSeek(event) {
       subtree: true,
     });
 
-    selectedLabel.clickableElement.focus();
+    selectedLabel.labeledElement.focus();
     if (seekMode === "click") {
-      selectedLabel.clickableElement.click();
+      selectedLabel.labeledElement.click();
 
-      if (isTypeableElement(selectedLabel.clickableElement)) {
+      if (isTypeableElement(selectedLabel.labeledElement)) {
         deactivateSeek();
         addToast("Disabling seek");
         return;
@@ -302,52 +302,68 @@ function handleSeek(event) {
 
 function addLabelElements() {
   const baseElement = getModalElement() ?? document;
-  const clickableSelectors = [
-    "a",
-    "button",
-    'input[type="button"]',
-    'input[type="submit"]',
-    'input[type="checkbox"]',
-    'input[type="radio"]',
-    '[role="button"]',
-    '[role="link"]',
-    '[role="tab"]',
-    '[role="menuitem"]',
-    '[role="option"]',
-    '[role="textbox"]',
-    "[onclick]",
-    "select",
-    "summary",
-    "input",
-    "textarea",
-    "label",
-  ];
+  let elementsToLabel;
+  if (seekMode === "click") {
+    const clickableSelectors = [
+      "a",
+      "button",
+      'input[type="button"]',
+      'input[type="submit"]',
+      'input[type="checkbox"]',
+      'input[type="radio"]',
+      '[role="button"]',
+      '[role="link"]',
+      '[role="tab"]',
+      '[role="menuitem"]',
+      '[role="option"]',
+      '[role="textbox"]',
+      "[onclick]",
+      "select",
+      "summary",
+      "input",
+      "textarea",
+      "label",
+    ];
 
-  const clickableElements = Array.from(
-    baseElement.querySelectorAll(clickableSelectors.join(", ")),
-  );
-  const visibleElements = clickableElements.filter(isElementVisible);
+    elementsToLabel = Array.from(
+      baseElement.querySelectorAll(clickableSelectors.join(", ")),
+    );
+  } else {
+    const allElements = Array.from(document.querySelectorAll("*"));
+    const scrollableElements = allElements.filter(isElementScrollable);
+
+    scrollableElements.forEach((element) => {
+      if (!element.hasAttribute("tabindex")) {
+        element.setAttribute("tabindex", "-1");
+        element.dataset.addedTabindex = "true";
+      }
+    });
+
+    elementsToLabel = scrollableElements;
+  }
+
+  const visibleElements = elementsToLabel.filter(isElementVisible);
   const elementsWithLabelText = visibleElements
     .slice(0, labels.length)
     .map((element, idx) => {
       return {
         labelText: labels[idx + 1],
-        clickableElement: element,
+        labeledElement: element,
       };
     });
   elementsWithLabelText.unshift({
     labelText: labels[0],
-    clickableElement: document.documentElement,
+    labeledElement: document.documentElement,
   });
 
-  elementsWithLabelText.forEach(({ clickableElement, labelText }) => {
-    const rect = clickableElement.getBoundingClientRect();
+  elementsWithLabelText.forEach(({ labeledElement, labelText }) => {
+    const rect = labeledElement.getBoundingClientRect();
 
-    const computedStyle = window.getComputedStyle(clickableElement);
+    const computedStyle = window.getComputedStyle(labeledElement);
     const fontSize = computedStyle.fontSize;
 
     const labelElement = document.createElement("span");
-    seekLabels.push({ labelElement, clickableElement, labelText: labelText });
+    seekLabels.push({ labelElement, labeledElement, labelText: labelText });
     labelElement.textContent = labelText;
     const styles = {
       lineHeight: "1",

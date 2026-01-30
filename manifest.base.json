@@ -52,7 +52,7 @@
       "description": "Place labels on clickable elements to click"
     },
     "toggle-label-focus": {
-      "description": "Place labels on clickable elements to focus"
+      "description": "Place labels on scrollable elements to focus"
     },
     "history-back": {
       "description": "Go back in the history stack for the current tab",
