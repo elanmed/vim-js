@@ -127,28 +127,28 @@ extension.runtime.onMessage.addListener((request) => {
       break;
     }
     case "scroll-down": {
-      getScrollableBaseElement({ defaultBase: window }).scrollBy({
+      getScrollableBaseElement().scrollBy({
         behavior: "smooth",
         top: Math.floor(window.innerHeight / 2),
       });
       break;
     }
     case "scroll-up": {
-      getScrollableBaseElement({ defaultBase: window }).scrollBy({
+      getScrollableBaseElement().scrollBy({
         behavior: "smooth",
         top: -Math.floor(window.innerHeight / 2),
       });
       break;
     }
     case "scroll-to-bottom": {
-      getScrollableBaseElement({ defaultBase: window }).scrollTo({
+      getScrollableBaseElement().scrollTo({
         behavior: "instant",
         top: document.documentElement.scrollHeight,
       });
       break;
     }
     case "scroll-to-top": {
-      getScrollableBaseElement({ defaultBase: window }).scrollTo({
+      getScrollableBaseElement().scrollTo({
         behavior: "instant",
         top: 0,
       });
@@ -248,7 +248,7 @@ function handleSeek(event) {
 }
 
 function addLabelElements() {
-  const baseElement = getBaseElement({ defaultBase: document });
+  const baseElement = getModalElement() ?? document;
   const clickableSelectors = [
     "a",
     "button",
@@ -363,18 +363,14 @@ function isElementVisible(element) {
   return true;
 }
 
-/**
- * @param {Object} params
- * @param {Element} params.defaultBase
- */
-function getBaseElement({ defaultBase }) {
+function getModalElement() {
   const dialogSelectors = ["dialog", '[role="dialog"]', '[role="alertdialog"]'];
   const dialogElements = Array.from(
     document.querySelectorAll(dialogSelectors.join(", ")),
   );
   const visibleElements = dialogElements.filter(isElementVisible);
   if (visibleElements.length) return visibleElements[0];
-  return defaultBase;
+  return null;
 }
 
 /**
@@ -404,9 +400,9 @@ function getFirstScrollableChild(element) {
  * @param {Object} params
  * @param {Element} params.defaultBase
  */
-function getScrollableBaseElement({ defaultBase }) {
-  const baseElement = getBaseElement({ defaultBase });
-  if (baseElement === defaultBase) return defaultBase;
+function getScrollableBaseElement() {
+  const baseElement = getModalElement();
+  if (!baseElement) return window;
 
   return getFirstScrollableChild(baseElement);
 }
