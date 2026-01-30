@@ -2,9 +2,9 @@ const extension = typeof browser === "undefined" ? chrome : browser;
 
 const labels = genLabels();
 
-let keymaps = null;
+let contentKeymaps = null;
 
-let activeToasts = [];
+const activeToasts = [];
 
 let recordedKeyEvents = [];
 let recordingTimeout = null;
@@ -55,11 +55,15 @@ document.addEventListener("keydown", async (event) => {
   // Don't need this check in background.js since all command keymaps are non-typeable
   if (isEventTypeableChar(event) && isTypeableElement(event.target)) return;
 
-  if (!keymaps) {
-    keymaps = await getContentKeymaps();
+  if (!contentKeymaps) {
+    contentKeymaps = await getContentKeymaps();
   }
-  const multiKeyKeymaps = keymaps.filter((keymap) => Array.isArray(keymap));
-  const singleKeyKeymaps = keymaps.filter((keymap) => !Array.isArray(keymap));
+  const multiKeyKeymaps = contentKeymaps.filter((keymap) =>
+    Array.isArray(keymap),
+  );
+  const singleKeyKeymaps = contentKeymaps.filter(
+    (keymap) => !Array.isArray(keymap),
+  );
 
   recordedKeyEvents.push(event);
   clearTimeout(recordingTimeout);
