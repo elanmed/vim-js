@@ -518,7 +518,7 @@ function isSameKey(keymap, event) {
 function isEventTypeableChar(event) {
   if (event.altKey || event.ctrlKey || event.metaKey) return false;
 
-  const lowerCase = "abcdefghijklmnopqrstubwxyz";
+  const lowerCase = "abcdefghijklmnopqrstuvwxyz";
   const upperCase = lowerCase.toUpperCase();
   const numbers = "0123456789";
   const punc = "`~!@#$%^&*()-=_+[]{};':\",./<>?";
