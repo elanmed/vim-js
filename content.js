@@ -417,7 +417,9 @@ function isElementScrollable(element) {
   const { overflowY } = window.getComputedStyle(element);
   const { scrollHeight, clientHeight } = element;
 
-  const allowsOverflow = overflowY === "scroll" || overflowY === "auto";
+  const isScrollingElement = element === document.scrollingElement;
+  const allowsOverflow =
+    overflowY === "scroll" || overflowY === "auto" || isScrollingElement;
   return allowsOverflow && scrollHeight > clientHeight;
 }
 
@@ -460,6 +462,7 @@ function scrollPage(callback) {
     const scrollableChild = getFirstScrollableChild(modalElement);
     if (scrollableChild) {
       callback(scrollableChild);
+      scrollPageCallback = null;
     }
     return;
   }
@@ -467,6 +470,7 @@ function scrollPage(callback) {
   const scrollableParent = getFirstScrollableParent(document.activeElement);
   if (scrollableParent) {
     callback(scrollableParent);
+    scrollPageCallback = null;
     return;
   }
 
