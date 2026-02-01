@@ -3,6 +3,6 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": ["tabs", "scripting", "https://*/*", "http://*/*"],
+  "permissions": ["tabs", "scripting", "storage", "https://*/*", "http://*/*"],
   "web_accessible_resources": ["content-keymaps.json"]
 }

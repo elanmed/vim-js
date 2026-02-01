@@ -21,11 +21,13 @@ let seekLabels = [];
 function activateSeek(mode) {
   seekMode = mode;
   addLabelElements();
+  chrome.storage.local.set({ seekMode });
 }
 
 function deactivateSeek() {
   resetSeekLabelsAndKeys();
   seekMode = "off";
+  chrome.storage.local.set({ seekMode: "off" });
 }
 
 function isSeekActive() {
@@ -40,10 +42,18 @@ function resetSeekLabelsAndKeys() {
   seekLabels = [];
 }
 
-document.addEventListener("scroll", () => resetSeekLabelsAndKeys());
-document.addEventListener("resize", () => resetSeekLabelsAndKeys());
+window.addEventListener("scroll", () => resetSeekLabelsAndKeys());
+window.addEventListener("resize", () => resetSeekLabelsAndKeys());
 
-document.addEventListener("keydown", async (event) => {
+window.addEventListener("load", async () => {
+  const storedSeekMode = (await chrome.storage.local.get(["seekMode"]))
+    ?.seekMode;
+  if (storedSeekMode === "click" || storedSeekMode === "focus") {
+    activateSeek(storedSeekMode);
+  }
+});
+
+window.addEventListener("keydown", async (event) => {
   if (isSeekActive()) {
     if (!isEventTypeableChar(event)) return;
 
