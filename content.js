@@ -339,12 +339,22 @@ function addLabelElements() {
       "label",
     ];
 
-    elementsToLabel = Array.from(
+    const clickableElements = Array.from(
       baseElement.querySelectorAll(clickableSelectors.join(", ")),
     );
+
+    if (!clickableElements.includes(document.documentElement)) {
+      clickableElements.unshift(document.documentElement);
+    }
+
+    elementsToLabel = clickableElements;
   } else {
     const allElements = Array.from(document.querySelectorAll("*"));
     const scrollableElements = allElements.filter(isElementScrollable);
+
+    if (!scrollableElements.includes(document.documentElement)) {
+      scrollableElements.unshift(document.documentElement);
+    }
 
     scrollableElements.forEach((element) => {
       if (!element.hasAttribute("tabindex")) {
@@ -360,14 +370,10 @@ function addLabelElements() {
     .slice(0, labels.length)
     .map((element, idx) => {
       return {
-        labelText: labels[idx + 1],
+        labelText: labels[idx],
         labeledElement: element,
       };
     });
-  elementsWithLabelText.unshift({
-    labelText: labels[0],
-    labeledElement: document.documentElement,
-  });
 
   elementsWithLabelText.forEach(({ labeledElement, labelText }) => {
     const rect = labeledElement.getBoundingClientRect();
@@ -376,7 +382,7 @@ function addLabelElements() {
     const fontSize = computedStyle.fontSize;
 
     const labelElement = document.createElement("span");
-    seekLabels.push({ labelElement, labeledElement, labelText: labelText });
+    seekLabels.push({ labelElement, labeledElement, labelText });
     labelElement.textContent = labelText;
     const styles = {
       lineHeight: "1",
