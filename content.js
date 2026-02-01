@@ -53,6 +53,10 @@ window.addEventListener("load", async () => {
   }
 });
 
+// window.addEventListener("beforeunload", () => {
+//   resetSeekLabelsAndKeys();
+// });
+
 window.addEventListener("keydown", async (event) => {
   if (isSeekActive()) {
     if (!isEventTypeableChar(event)) return;
