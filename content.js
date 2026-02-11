@@ -365,6 +365,11 @@ function addLabelElements() {
     elementsToLabel = scrollableElements;
   }
 
+  if (elementsToLabel.length === 1) {
+    addToast(`No elements to ${seekMode}`);
+    return deactivateSeek();
+  }
+
   const visibleElements = elementsToLabel.filter(isElementVisible);
   const elementsWithLabelText = visibleElements
     .slice(0, labels.length)
