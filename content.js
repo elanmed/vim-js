@@ -340,7 +340,7 @@ function addLabelElements() {
     ];
 
     const clickableElements = Array.from(
-      baseElement.querySelectorAll(clickableSelectors.join(", ")),
+      querySelectorAllWithShadow(baseElement, clickableSelectors.join(", ")),
     );
 
     if (!clickableElements.includes(document.documentElement)) {
@@ -349,7 +349,7 @@ function addLabelElements() {
 
     elementsToLabel = clickableElements;
   } else {
-    const allElements = Array.from(document.querySelectorAll("*"));
+    const allElements = Array.from(querySelectorAllWithShadow(document, "*"));
     const scrollableElements = allElements.filter(isElementScrollable);
 
     if (!scrollableElements.includes(document.documentElement)) {
@@ -459,7 +459,7 @@ function isElementVisible(element) {
 function getModalElement() {
   const dialogSelectors = ["dialog", '[role="dialog"]', '[role="alertdialog"]'];
   const dialogElements = Array.from(
-    document.querySelectorAll(dialogSelectors.join(", ")),
+    querySelectorAllWithShadow(document, dialogSelectors.join(", ")),
   );
   const visibleElements = dialogElements.filter(isElementVisible);
   if (visibleElements.length) return visibleElements[0];
@@ -573,4 +573,20 @@ function isTypeableElement(element) {
     element.tagName === "SELECT" ||
     element.isContentEditable
   );
+}
+
+/**
+ * @param {Element} root
+ * @param {string} selector
+ */
+function querySelectorAllWithShadow(root, selector) {
+  const matchedElements = Array.from(root.querySelectorAll(selector));
+  for (const element of root.querySelectorAll("*")) {
+    if (element.shadowRoot) {
+      matchedElements.push(
+        ...querySelectorAllWithShadow(element.shadowRoot, selector),
+      );
+    }
+  }
+  return matchedElements;
 }
