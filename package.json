@@ -1,0 +1,15 @@
+{
+  "name": "vim-js",
+  "version": "0.0.1",
+  "description": "A minimalist vimium",
+  "scripts": {
+    "install-deps": "npm install && npx playwright install && npx playwright install-deps",
+    "test": "playwright test",
+    "test:headless": "./test-headless.sh",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.0"
+  }
+}
