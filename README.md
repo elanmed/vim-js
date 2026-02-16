@@ -12,13 +12,13 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 
 #### Chrome
 
-- `node gen-manifest.js chrome`
+- `npm run gen-manifest chrome`
 - Click `Load unpacked` at `chrome://extensions/` upload the entire directory
 - Set extension shortcuts at `chrome://extensions/shortcuts`
 
 #### Firefox
 
-- `node gen-manifest.js firefox`
+- `npm run gen-manifest firefox`
 - Click `Load Temporary Add-on` at `about:debugging#/runtime/this-firefox` and upload the `manifest.json`
 - Set `xpinstall.signatures.required` to `false` at `about:config` to persist the extension after closing firefox
 - Set extension shortcuts by clicking on the gear, `Manage extension shortcuts` at `about:addons`

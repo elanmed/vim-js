@@ -4,8 +4,9 @@
   "description": "A minimalist vimium",
   "scripts": {
     "install-deps": "npm install && npx playwright install && npx playwright install-deps",
+    "gen-manifest": "node manifest/gen-manifest.js",
     "test": "playwright test",
-    "test:headless": "./test-headless.sh",
+    "test:headless": "xvfb-run playwright test",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug"
   },

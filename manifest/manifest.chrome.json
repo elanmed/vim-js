@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js"
   },
   "host_permissions": ["<all_urls>"],
   "permissions": ["tabs", "scripting", "storage"],
