@@ -15,6 +15,10 @@ let seekFirstLabelKey = null;
 let seekSecondLabelKey = null;
 let seekLabels = [];
 
+window.addEventListener("__vimJsTestCommand", (event) => {
+  extension.runtime.sendMessage({ action: event.detail.action });
+});
+
 /**
  * @param { "click" | "focus" } mode
  */
