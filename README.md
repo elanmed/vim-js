@@ -4,7 +4,7 @@ My take on a minimal [vimium](https://github.com/philc/vimium)
 
 - No dependencies
 - Two javascript files
-- ~600 lines of code
+- ~600 lines of code, ~500 lines of tests
 
 ![demo](https://elanmed.dev/nvim-plugins/vim-js.png)
 
