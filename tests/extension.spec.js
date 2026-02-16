@@ -58,14 +58,38 @@ test.describe("vim-js extension", () => {
       const finalScrollY = await page.evaluate(() => window.scrollY);
       expect(finalScrollY).toBeGreaterThan(initialScrollY);
 
-      const isAtBottom = await page.evaluate(() => {
+      await page.evaluate(() => {
         return (
           window.innerHeight + window.scrollY >=
           document.documentElement.scrollHeight
         );
       });
+    });
 
-      expect(isAtBottom).toBe(true);
+    test("scroll-to-bottom command scrolls to bottom", async () => {
+      await page.goto("https://elanmed.dev/");
+      await page.waitForLoadState("load");
+
+      const initialScrollY = await page.evaluate(() => window.scrollY);
+
+      await page.evaluate(() => {
+        window.__vimJsTest.sendCommand("scroll-to-bottom");
+      });
+
+      await page.waitForFunction(
+        (initial) => window.scrollY > initial,
+        initialScrollY,
+      );
+
+      const finalScrollY = await page.evaluate(() => window.scrollY);
+      expect(finalScrollY).toBeGreaterThan(initialScrollY);
+
+      await page.evaluate(() => {
+        return (
+          window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight
+        );
+      });
     });
 
     test("gg scrolls to top", async () => {
@@ -82,7 +106,22 @@ test.describe("vim-js extension", () => {
       await page.waitForFunction(() => window.scrollY === 0, {});
     });
 
-    test("Ctrl+D scrolls down half page", async () => {
+    test("scroll-to-top command scrolls to top", async () => {
+      await page.goto("https://elanmed.dev/");
+      await page.waitForLoadState("load");
+
+      await page.evaluate(() => window.scrollTo(0, 1000));
+      const initialScrollY = await page.evaluate(() => window.scrollY);
+      expect(initialScrollY).toBeGreaterThan(0);
+
+      await page.evaluate(() => {
+        window.__vimJsTest.sendCommand("scroll-to-top");
+      });
+
+      await page.waitForFunction(() => window.scrollY === 0, {});
+    });
+
+    test("scroll-down command scrolls down half page", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
 
@@ -98,7 +137,7 @@ test.describe("vim-js extension", () => {
       );
     });
 
-    test("Ctrl+U scrolls up half page", async () => {
+    test("scroll-up command scrolls up half page", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
 
@@ -131,6 +170,24 @@ test.describe("vim-js extension", () => {
 
       await page.keyboard.press("y");
       await page.keyboard.press("y");
+
+      await page.waitForTimeout(DELAY);
+
+      const clipboardText = await page.evaluate(() =>
+        navigator.clipboard.readText(),
+      );
+      expect(clipboardText).toBe("https://elanmed.dev/");
+    });
+
+    test("copy-href-to-clipboard command copies URL to clipboard", async () => {
+      await page.goto("https://elanmed.dev/");
+      await page.waitForLoadState("load");
+
+      await context.grantPermissions(["clipboard-read", "clipboard-write"]);
+
+      await page.evaluate(() => {
+        window.__vimJsTest.sendCommand("copy-href-to-clipboard");
+      });
 
       await page.waitForTimeout(DELAY);
 
