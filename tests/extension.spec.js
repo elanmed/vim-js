@@ -369,91 +369,104 @@ test.describe("vim-js extension", () => {
   });
 
   test.describe("tab navigation", () => {
-    test("switches to left tab", async () => {
+    test("switches to left tab, right tab", async () => {
       const page1 = await context.newPage();
       await setupPage(page1);
-      await page1.goto("https://example.com");
+      await page1.goto("https://elanmed.dev/");
+
       const page2 = await context.newPage();
       await setupPage(page2);
-      await page2.goto("https://elanmed.dev/");
+      await page2.goto("https://elanmed.dev/blog");
 
       await page2.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-left-tab");
       });
       await page2.waitForTimeout(DELAY);
 
-      const pages = context.pages();
-      expect(pages.length).toBeGreaterThan(1);
-    });
+      const page1HasFocus = await page1.evaluate(() => document.hasFocus());
+      expect(page1HasFocus).toBe(true);
 
-    test("switches to right tab", async () => {
-      const page1 = await context.newPage();
-      await setupPage(page1);
-      await page1.goto("https://example.com");
-
-      await page1.evaluate(() => {
+      await page2.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-right-tab");
       });
-      await page1.waitForTimeout(DELAY);
+      await page2.waitForTimeout(DELAY);
 
-      const pages = context.pages();
-      expect(pages.length).toBeGreaterThan(1);
+      const page2HasFocus = await page2.evaluate(() => document.hasFocus());
+      expect(page2HasFocus).toBe(true);
     });
 
     test("switches to first tab", async () => {
-      const p1 = await context.newPage();
-      await setupPage(p1);
-      const p2 = await context.newPage();
-      await setupPage(p2);
-      const currentPage = await context.newPage();
-      await setupPage(currentPage);
-      await currentPage.goto("https://elanmed.dev/");
+      const page1 = await context.newPage();
+      await setupPage(page1);
+      await page1.goto("https://elanmed.dev/");
 
-      await currentPage.evaluate(() => {
+      const page2 = await context.newPage();
+      await setupPage(page2);
+      await page2.goto("https://elanmed.dev/blog");
+
+      const page3 = await context.newPage();
+      await setupPage(page3);
+      await page3.goto("https://elanmed.dev/bonus");
+
+      await page3.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-first-tab");
       });
-      await currentPage.waitForTimeout(DELAY);
+      await page3.waitForTimeout(DELAY);
 
-      const pages = context.pages();
-      expect(pages.length).toBeGreaterThan(0);
+      const page1HasFocus = await page1.evaluate(() => document.hasFocus());
+      expect(page1HasFocus).toBe(true);
     });
 
     test("switches to last tab", async () => {
-      const firstPage = await context.newPage();
-      await setupPage(firstPage);
-      await firstPage.goto("https://example.com");
-      const p2 = await context.newPage();
-      await setupPage(p2);
-      const p3 = await context.newPage();
-      await setupPage(p3);
+      const page1 = await context.newPage();
+      await setupPage(page1);
+      await page1.goto("https://elanmed.dev/");
 
-      await firstPage.evaluate(() => {
+      const page2 = await context.newPage();
+      await setupPage(page2);
+      await page2.goto("https://elanmed.dev/blog");
+
+      const page3 = await context.newPage();
+      await setupPage(page3);
+      await page3.goto("https://elanmed.dev/bonus");
+
+      await page1.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-last-tab");
       });
-      await firstPage.waitForTimeout(DELAY);
+      await page1.waitForTimeout(DELAY);
 
-      const pages = context.pages();
-      expect(pages.length).toBeGreaterThan(0);
+      const page3HasFocus = await page3.evaluate(() => document.hasFocus());
+      expect(page3HasFocus).toBe(true);
     });
 
     test("switches to previous tab", async () => {
       const page1 = await context.newPage();
       await setupPage(page1);
-      await page1.goto("https://example.com");
+      await page1.goto("https://elanmed.dev/");
+
       const page2 = await context.newPage();
       await setupPage(page2);
-      await page2.goto("https://elanmed.dev/");
+      await page2.goto("https://elanmed.dev/blog");
 
-      await page1.bringToFront();
-      await page1.waitForTimeout(DELAY);
+      const page3 = await context.newPage();
+      await setupPage(page3);
+      await page3.goto("https://elanmed.dev/bonus");
 
-      await page1.evaluate(() => {
-        window.__vimJsTest.sendCommand("switch-to-prev-tab");
+      await page3.evaluate(() => {
+        window.__vimJsTest.sendCommand("switch-to-left-tab");
       });
-      await page1.waitForTimeout(DELAY);
+      await page3.waitForTimeout(DELAY);
 
-      const pages = context.pages();
-      expect(pages.length).toBeGreaterThan(1);
+      const page2HasFocus = await page2.evaluate(() => document.hasFocus());
+      expect(page2HasFocus).toBe(true);
+
+      await page2.evaluate(() => {
+        window.__vimJsTest.sendCommand("switch-to-previous-tab");
+      });
+      await page2.waitForTimeout(DELAY);
+
+      const page3HasFocus = await page3.evaluate(() => document.hasFocus());
+      expect(page3HasFocus).toBe(true);
     });
   });
 
@@ -462,46 +475,38 @@ test.describe("vim-js extension", () => {
       const freshPage = await context.newPage();
       await setupPage(freshPage);
 
-      await freshPage.goto("https://example.com");
-      await freshPage.waitForLoadState("load");
       await freshPage.goto("https://elanmed.dev/");
+      await freshPage.waitForLoadState("load");
+      await freshPage.goto("https://elanmed.dev/bonus");
       await freshPage.waitForLoadState("load");
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-back");
       });
 
-      await freshPage.waitForURL("**/example.com**", { timeout: DELAY });
-
-      const url = freshPage.url();
-      expect(url).toContain("example.com");
-
-      await freshPage.close();
+      await freshPage.waitForURL("https://elanmed.dev/", { timeout: DELAY });
     });
 
     test("Ctrl+I goes forward in history", async () => {
       const freshPage = await context.newPage();
       await setupPage(freshPage);
 
-      await freshPage.goto("https://example.com");
-      await freshPage.waitForLoadState("load");
       await freshPage.goto("https://elanmed.dev/");
+      await freshPage.waitForLoadState("load");
+      await freshPage.goto("https://elanmed.dev/bonus");
       await freshPage.waitForLoadState("load");
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-back");
       });
-      await freshPage.waitForURL("**/example.com**", { timeout: DELAY });
+      await freshPage.waitForURL("https://elanmed.dev", { timeout: DELAY });
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-forward");
       });
-      await freshPage.waitForURL("**/elanmed.dev/**", { timeout: DELAY });
-
-      const url = freshPage.url();
-      expect(url).toContain("elanmed.dev");
-
-      await freshPage.close();
+      await freshPage.waitForURL("https://elanmed.dev/bonus", {
+        timeout: DELAY,
+      });
     });
   });
 });
