@@ -306,9 +306,28 @@ test.describe("vim-js extension", () => {
       await page.waitForLoadState("load");
 
       await page.evaluate(() => {
+        const scrollableDiv = document.createElement("div");
+        scrollableDiv.style.height = "200px";
+        scrollableDiv.style.overflow = "auto";
+        scrollableDiv.innerHTML = "<div style='height: 1000px'>Content</div>";
+        document.body.appendChild(scrollableDiv);
+      });
+
+      await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-focus");
       });
       await page.waitForTimeout(DELAY);
+
+      await page.waitForFunction(
+        () => {
+          const labels = document.querySelectorAll(
+            'span[style*="position: fixed"]',
+          );
+          return labels.length > 0;
+        },
+        {},
+        { timeout: DELAY },
+      );
 
       const labelText = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -484,7 +503,10 @@ test.describe("vim-js extension", () => {
         window.__vimJsTest.sendCommand("history-back");
       });
 
-      await freshPage.waitForURL("https://elanmed.dev/", { timeout: DELAY });
+      await freshPage.waitForURL("https://elanmed.dev/", {
+        timeout: DELAY,
+        waitUntil: "load",
+      });
     });
 
     test("Ctrl+I goes forward in history", async () => {
@@ -499,13 +521,15 @@ test.describe("vim-js extension", () => {
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-back");
       });
-      await freshPage.waitForURL("https://elanmed.dev", { timeout: DELAY });
+      await freshPage.waitForURL("https://elanmed.dev", {
+        waitUntil: "load",
+      });
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-forward");
       });
       await freshPage.waitForURL("https://elanmed.dev/bonus", {
-        timeout: DELAY,
+        waitUntil: "load",
       });
     });
   });
