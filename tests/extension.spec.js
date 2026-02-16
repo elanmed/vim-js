@@ -172,11 +172,6 @@ test.describe("vim-js extension", () => {
         {},
         { timeout: DELAY },
       );
-
-      const isFocusedAfter = await page.evaluate(
-        () => document.activeElement.id === "test-input",
-      );
-      expect(isFocusedAfter).toBe(false);
     });
   });
 
@@ -199,40 +194,29 @@ test.describe("vim-js extension", () => {
         {},
         { timeout: DELAY },
       );
-
-      const hasLabels = await page.evaluate(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      });
-
-      expect(hasLabels).toBe(true);
     });
 
     test("clicking label activates element", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
 
-      const hasLabelsInitially = await page.evaluate(() => {
+      await page.evaluate(() => {
         const labels = document.querySelectorAll(
           'span[style*="position: fixed"]',
         );
         return labels.length > 0;
       });
 
-      if (hasLabelsInitially) {
-        await page.evaluate(() => {
-          window.__vimJsTest.sendCommand("toggle-label-click");
-        });
-        await page.waitForFunction(
-          () =>
-            document.querySelectorAll('span[style*="position: fixed"]')
-              .length === 0,
-          {},
-          { timeout: DELAY },
-        );
-      }
+      await page.evaluate(() => {
+        window.__vimJsTest.sendCommand("toggle-label-click");
+      });
+      await page.waitForFunction(
+        () =>
+          document.querySelectorAll('span[style*="position: fixed"]').length ===
+          0,
+        {},
+        { timeout: DELAY },
+      );
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-click");
@@ -256,30 +240,19 @@ test.describe("vim-js extension", () => {
         return labels[0]?.textContent;
       });
 
-      if (labelText && labelText.length === 2) {
-        await page.keyboard.press(labelText[0]);
-        await page.keyboard.press(labelText[1]);
+      await page.keyboard.press(labelText[0]);
+      await page.keyboard.press(labelText[1]);
 
-        await page.waitForFunction(
-          () => {
-            const labels = document.querySelectorAll(
-              'span[style*="position: fixed"]',
-            );
-            return labels.length === 0;
-          },
-          {},
-          { timeout: DELAY },
-        );
-
-        const labelsGone = await page.evaluate(() => {
+      await page.waitForFunction(
+        () => {
           const labels = document.querySelectorAll(
             'span[style*="position: fixed"]',
           );
           return labels.length === 0;
-        });
-
-        expect(labelsGone).toBe(true);
-      }
+        },
+        {},
+        { timeout: DELAY },
+      );
     });
 
     test("shows labels on scrollable elements in focus mode", async () => {
@@ -294,26 +267,23 @@ test.describe("vim-js extension", () => {
         document.body.appendChild(scrollableDiv);
       });
 
-      // Ensure labels are off first, then toggle on
-      const hasLabelsInitially = await page.evaluate(() => {
+      await page.evaluate(() => {
         const labels = document.querySelectorAll(
           'span[style*="position: fixed"]',
         );
         return labels.length > 0;
       });
 
-      if (hasLabelsInitially) {
-        await page.evaluate(() => {
-          window.__vimJsTest.sendCommand("toggle-label-focus");
-        });
-        await page.waitForFunction(
-          () =>
-            document.querySelectorAll('span[style*="position: fixed"]')
-              .length === 0,
-          {},
-          { timeout: DELAY },
-        );
-      }
+      await page.evaluate(() => {
+        window.__vimJsTest.sendCommand("toggle-label-focus");
+      });
+      await page.waitForFunction(
+        () =>
+          document.querySelectorAll('span[style*="position: fixed"]').length ===
+          0,
+        {},
+        { timeout: DELAY },
+      );
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-focus");
@@ -329,15 +299,6 @@ test.describe("vim-js extension", () => {
         {},
         { timeout: DELAY },
       );
-
-      const hasLabels = await page.evaluate(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      });
-
-      expect(hasLabels).toBe(true);
     });
 
     test("focusing label scrolls to element", async () => {
@@ -356,30 +317,19 @@ test.describe("vim-js extension", () => {
         return labels[0]?.textContent;
       });
 
-      if (labelText && labelText.length === 2) {
-        await page.keyboard.press(labelText[0]);
-        await page.keyboard.press(labelText[1]);
+      await page.keyboard.press(labelText[0]);
+      await page.keyboard.press(labelText[1]);
 
-        await page.waitForFunction(
-          () => {
-            const labels = document.querySelectorAll(
-              'span[style*="position: fixed"]',
-            );
-            return labels.length === 0;
-          },
-          {},
-          { timeout: DELAY },
-        );
-
-        const labelsGone = await page.evaluate(() => {
+      await page.waitForFunction(
+        () => {
           const labels = document.querySelectorAll(
             'span[style*="position: fixed"]',
           );
           return labels.length === 0;
-        });
-
-        expect(labelsGone).toBe(true);
-      }
+        },
+        {},
+        { timeout: DELAY },
+      );
     });
 
     test("toggles label mode off", async () => {
@@ -401,14 +351,6 @@ test.describe("vim-js extension", () => {
         { timeout: DELAY },
       );
 
-      const hasLabelsBefore = await page.evaluate(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      });
-      expect(hasLabelsBefore).toBe(true);
-
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-click");
       });
@@ -423,14 +365,6 @@ test.describe("vim-js extension", () => {
         {},
         { timeout: DELAY },
       );
-
-      const hasLabelsAfter = await page.evaluate(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      });
-      expect(hasLabelsAfter).toBe(false);
     });
   });
 
