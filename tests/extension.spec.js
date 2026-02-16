@@ -3,6 +3,8 @@ const path = require("path");
 const os = require("os");
 const fs = require("fs");
 
+const DELAY = 200;
+
 test.describe("vim-js extension", () => {
   let context;
   let page;
@@ -44,19 +46,23 @@ test.describe("vim-js extension", () => {
     test("Shift+G scrolls to bottom", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       const initialScrollY = await page.evaluate(() => window.scrollY);
       await page.keyboard.press("Shift+G");
-      await page.waitForTimeout(500);
-      const finalScrollY = await page.evaluate(() => window.scrollY);
 
+      await page.waitForFunction(
+        (initial) => window.scrollY > initial,
+        initialScrollY,
+        { timeout: DELAY },
+      );
+
+      const finalScrollY = await page.evaluate(() => window.scrollY);
       expect(finalScrollY).toBeGreaterThan(initialScrollY);
 
       const isAtBottom = await page.evaluate(() => {
         return (
           window.innerHeight + window.scrollY >=
-          document.documentElement.scrollHeight - 10
+          document.documentElement.scrollHeight
         );
       });
 
@@ -66,55 +72,60 @@ test.describe("vim-js extension", () => {
     test("gg scrolls to top", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => window.scrollTo(0, 1000));
-      await page.waitForTimeout(100);
-
       const initialScrollY = await page.evaluate(() => window.scrollY);
       expect(initialScrollY).toBeGreaterThan(0);
 
       await page.keyboard.press("g");
       await page.keyboard.press("g");
-      await page.waitForTimeout(500);
 
-      const finalScrollY = await page.evaluate(() => window.scrollY);
-      expect(finalScrollY).toBe(0);
+      await page.waitForFunction(
+        () => window.scrollY === 0,
+        {},
+        { timeout: DELAY },
+      );
     });
 
     test("Ctrl+D scrolls down half page", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       const initialScrollY = await page.evaluate(() => window.scrollY);
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("scroll-down");
       });
-      await page.waitForTimeout(500);
 
-      const finalScrollY = await page.evaluate(() => window.scrollY);
-      expect(finalScrollY).toBeGreaterThan(initialScrollY);
+      await page.waitForFunction(
+        (initial) => window.scrollY > initial,
+        initialScrollY,
+        { timeout: DELAY },
+      );
     });
 
     test("Ctrl+U scrolls up half page", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => window.scrollTo(0, 1000));
-      await page.waitForTimeout(100);
+      await page.waitForFunction(
+        () => window.scrollY >= 1000,
+        {},
+        { timeout: 1000 },
+      );
 
       const initialScrollY = await page.evaluate(() => window.scrollY);
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("scroll-up");
       });
-      await page.waitForTimeout(500);
 
-      const finalScrollY = await page.evaluate(() => window.scrollY);
-      expect(finalScrollY).toBeLessThan(initialScrollY);
+      await page.waitForFunction(
+        (initial) => window.scrollY < initial,
+        initialScrollY,
+        { timeout: DELAY },
+      );
     });
   });
 
@@ -122,13 +133,13 @@ test.describe("vim-js extension", () => {
     test("yy copies URL to clipboard", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await context.grantPermissions(["clipboard-read", "clipboard-write"]);
 
       await page.keyboard.press("y");
       await page.keyboard.press("y");
-      await page.waitForTimeout(500);
+
+      await page.waitForTimeout(DELAY);
 
       const clipboardText = await page.evaluate(() =>
         navigator.clipboard.readText(),
@@ -141,7 +152,6 @@ test.describe("vim-js extension", () => {
     test("Escape blurs active element", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => {
         const input = document.createElement("input");
@@ -156,7 +166,12 @@ test.describe("vim-js extension", () => {
       expect(isFocusedBefore).toBe(true);
 
       await page.keyboard.press("Escape");
-      await page.waitForTimeout(500);
+
+      await page.waitForFunction(
+        () => document.activeElement.id !== "test-input",
+        {},
+        { timeout: DELAY },
+      );
 
       const isFocusedAfter = await page.evaluate(
         () => document.activeElement.id === "test-input",
@@ -169,12 +184,21 @@ test.describe("vim-js extension", () => {
     test("shows labels on clickable elements", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-click");
       });
-      await page.waitForTimeout(500);
+
+      await page.waitForFunction(
+        () => {
+          const labels = document.querySelectorAll(
+            'span[style*="position: fixed"]',
+          );
+          return labels.length > 0;
+        },
+        {},
+        { timeout: DELAY },
+      );
 
       const hasLabels = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -189,12 +213,41 @@ test.describe("vim-js extension", () => {
     test("clicking label activates element", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
+
+      const hasLabelsInitially = await page.evaluate(() => {
+        const labels = document.querySelectorAll(
+          'span[style*="position: fixed"]',
+        );
+        return labels.length > 0;
+      });
+
+      if (hasLabelsInitially) {
+        await page.evaluate(() => {
+          window.__vimJsTest.sendCommand("toggle-label-click");
+        });
+        await page.waitForFunction(
+          () =>
+            document.querySelectorAll('span[style*="position: fixed"]')
+              .length === 0,
+          {},
+          { timeout: DELAY },
+        );
+      }
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-click");
       });
-      await page.waitForTimeout(500);
+
+      await page.waitForFunction(
+        () => {
+          const labels = document.querySelectorAll(
+            'span[style*="position: fixed"]',
+          );
+          return labels.length > 0;
+        },
+        {},
+        { timeout: DELAY },
+      );
 
       const labelText = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -206,7 +259,17 @@ test.describe("vim-js extension", () => {
       if (labelText && labelText.length === 2) {
         await page.keyboard.press(labelText[0]);
         await page.keyboard.press(labelText[1]);
-        await page.waitForTimeout(500);
+
+        await page.waitForFunction(
+          () => {
+            const labels = document.querySelectorAll(
+              'span[style*="position: fixed"]',
+            );
+            return labels.length === 0;
+          },
+          {},
+          { timeout: DELAY },
+        );
 
         const labelsGone = await page.evaluate(() => {
           const labels = document.querySelectorAll(
@@ -222,7 +285,6 @@ test.describe("vim-js extension", () => {
     test("shows labels on scrollable elements in focus mode", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => {
         const scrollableDiv = document.createElement("div");
@@ -231,12 +293,42 @@ test.describe("vim-js extension", () => {
         scrollableDiv.innerHTML = "<div style='height: 1000px'>Content</div>";
         document.body.appendChild(scrollableDiv);
       });
-      await page.waitForTimeout(200);
+
+      // Ensure labels are off first, then toggle on
+      const hasLabelsInitially = await page.evaluate(() => {
+        const labels = document.querySelectorAll(
+          'span[style*="position: fixed"]',
+        );
+        return labels.length > 0;
+      });
+
+      if (hasLabelsInitially) {
+        await page.evaluate(() => {
+          window.__vimJsTest.sendCommand("toggle-label-focus");
+        });
+        await page.waitForFunction(
+          () =>
+            document.querySelectorAll('span[style*="position: fixed"]')
+              .length === 0,
+          {},
+          { timeout: DELAY },
+        );
+      }
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-focus");
       });
-      await page.waitForTimeout(500);
+
+      await page.waitForFunction(
+        () => {
+          const labels = document.querySelectorAll(
+            'span[style*="position: fixed"]',
+          );
+          return labels.length > 0;
+        },
+        {},
+        { timeout: DELAY },
+      );
 
       const hasLabels = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -251,12 +343,11 @@ test.describe("vim-js extension", () => {
     test("focusing label scrolls to element", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-focus");
       });
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(DELAY);
 
       const labelText = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -268,7 +359,17 @@ test.describe("vim-js extension", () => {
       if (labelText && labelText.length === 2) {
         await page.keyboard.press(labelText[0]);
         await page.keyboard.press(labelText[1]);
-        await page.waitForTimeout(500);
+
+        await page.waitForFunction(
+          () => {
+            const labels = document.querySelectorAll(
+              'span[style*="position: fixed"]',
+            );
+            return labels.length === 0;
+          },
+          {},
+          { timeout: DELAY },
+        );
 
         const labelsGone = await page.evaluate(() => {
           const labels = document.querySelectorAll(
@@ -284,12 +385,21 @@ test.describe("vim-js extension", () => {
     test("toggles label mode off", async () => {
       await page.goto("https://elanmed.dev/");
       await page.waitForLoadState("load");
-      await page.waitForTimeout(500);
 
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-click");
       });
-      await page.waitForTimeout(500);
+
+      await page.waitForFunction(
+        () => {
+          const labels = document.querySelectorAll(
+            'span[style*="position: fixed"]',
+          );
+          return labels.length > 0;
+        },
+        {},
+        { timeout: DELAY },
+      );
 
       const hasLabelsBefore = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -302,7 +412,17 @@ test.describe("vim-js extension", () => {
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-click");
       });
-      await page.waitForTimeout(500);
+
+      await page.waitForFunction(
+        () => {
+          const labels = document.querySelectorAll(
+            'span[style*="position: fixed"]',
+          );
+          return labels.length === 0;
+        },
+        {},
+        { timeout: DELAY },
+      );
 
       const hasLabelsAfter = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -322,12 +442,11 @@ test.describe("vim-js extension", () => {
       const page2 = await context.newPage();
       await setupPage(page2);
       await page2.goto("https://elanmed.dev/");
-      await page2.waitForTimeout(500);
 
       await page2.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-left-tab");
       });
-      await page2.waitForTimeout(1000);
+      await page2.waitForTimeout(DELAY);
 
       const pages = context.pages();
       expect(pages.length).toBeGreaterThan(1);
@@ -337,12 +456,11 @@ test.describe("vim-js extension", () => {
       const page1 = await context.newPage();
       await setupPage(page1);
       await page1.goto("https://example.com");
-      await page1.waitForTimeout(500);
 
       await page1.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-right-tab");
       });
-      await page1.waitForTimeout(1000);
+      await page1.waitForTimeout(DELAY);
 
       const pages = context.pages();
       expect(pages.length).toBeGreaterThan(1);
@@ -356,12 +474,11 @@ test.describe("vim-js extension", () => {
       const currentPage = await context.newPage();
       await setupPage(currentPage);
       await currentPage.goto("https://elanmed.dev/");
-      await currentPage.waitForTimeout(500);
 
       await currentPage.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-first-tab");
       });
-      await currentPage.waitForTimeout(1000);
+      await currentPage.waitForTimeout(DELAY);
 
       const pages = context.pages();
       expect(pages.length).toBeGreaterThan(0);
@@ -375,12 +492,11 @@ test.describe("vim-js extension", () => {
       await setupPage(p2);
       const p3 = await context.newPage();
       await setupPage(p3);
-      await firstPage.waitForTimeout(500);
 
       await firstPage.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-last-tab");
       });
-      await firstPage.waitForTimeout(1000);
+      await firstPage.waitForTimeout(DELAY);
 
       const pages = context.pages();
       expect(pages.length).toBeGreaterThan(0);
@@ -393,15 +509,14 @@ test.describe("vim-js extension", () => {
       const page2 = await context.newPage();
       await setupPage(page2);
       await page2.goto("https://elanmed.dev/");
-      await page2.waitForTimeout(500);
 
       await page1.bringToFront();
-      await page1.waitForTimeout(500);
+      await page1.waitForTimeout(DELAY);
 
       await page1.evaluate(() => {
         window.__vimJsTest.sendCommand("switch-to-prev-tab");
       });
-      await page1.waitForTimeout(1000);
+      await page1.waitForTimeout(DELAY);
 
       const pages = context.pages();
       expect(pages.length).toBeGreaterThan(1);
@@ -417,13 +532,12 @@ test.describe("vim-js extension", () => {
       await freshPage.waitForLoadState("load");
       await freshPage.goto("https://elanmed.dev/");
       await freshPage.waitForLoadState("load");
-      await freshPage.waitForTimeout(500);
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-back");
       });
 
-      await freshPage.waitForURL("**/example.com**", { timeout: 3000 });
+      await freshPage.waitForURL("**/example.com**", { timeout: DELAY });
 
       const url = freshPage.url();
       expect(url).toContain("example.com");
@@ -439,18 +553,16 @@ test.describe("vim-js extension", () => {
       await freshPage.waitForLoadState("load");
       await freshPage.goto("https://elanmed.dev/");
       await freshPage.waitForLoadState("load");
-      await freshPage.waitForTimeout(500);
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-back");
       });
-      await freshPage.waitForURL("**/example.com**", { timeout: 5000 });
-      await freshPage.waitForTimeout(500);
+      await freshPage.waitForURL("**/example.com**", { timeout: DELAY });
 
       await freshPage.evaluate(() => {
         window.__vimJsTest.sendCommand("history-forward");
       });
-      await freshPage.waitForURL("**/elanmed.dev/**", { timeout: 5000 });
+      await freshPage.waitForURL("**/elanmed.dev/**", { timeout: DELAY });
 
       const url = freshPage.url();
       expect(url).toContain("elanmed.dev");
