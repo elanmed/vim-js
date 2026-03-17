@@ -71,7 +71,13 @@ window.addEventListener("keydown", async (event) => {
   }
 
   // Don't need this check in background.js since all command keymaps are non-typeable
-  if (isEventTypeableChar(event) && isTypeableElement(event.target)) return;
+  if (
+    isEventTypeableChar(event) &&
+    // composedPath() is used instead of event.target to handle shadow DOM retargeting
+    event.composedPath().some(isTypeableElement)
+  ) {
+    return;
+  }
 
   if (!contentKeymaps) {
     contentKeymaps = await getContentKeymaps();
