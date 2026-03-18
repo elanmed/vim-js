@@ -293,7 +293,7 @@ function handleSeek(event) {
 
     selectedLabel.labeledElement.focus();
     if (seekMode === "click") {
-      selectedLabel.labeledElement.click();
+      simulateClick(selectedLabel.labeledElement);
 
       if (isTypeableElement(selectedLabel.labeledElement)) {
         deactivateSeek();
@@ -600,3 +600,27 @@ function querySelectorAllWithShadow(root, selector) {
   }
   return matchedElements;
 }
+
+/**
+ * @param {Element} element
+ */
+function simulateClick(element) {
+  const rect = element.getBoundingClientRect();
+  const clientX = rect.left + rect.width / 2;
+  const clientY = rect.top + rect.height / 2;
+  const eventInit = { bubbles: true, cancelable: true, clientX, clientY };
+
+  for (const type of [
+    "pointerdown",
+    "mousedown",
+    "pointerup",
+    "mouseup",
+    "click",
+  ]) {
+    const EventConstructor = type.startsWith("pointer")
+      ? PointerEvent
+      : MouseEvent;
+    element.dispatchEvent(new EventConstructor(type, eventInit));
+  }
+}
+
