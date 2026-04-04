@@ -6,7 +6,7 @@
     "install-deps": "npm install && npx playwright install && npx playwright install-deps",
     "gen-manifest": "node manifest/gen-manifest.js",
     "test": "playwright test",
-    "test:headless": "xvfb-run playwright test",
+    "test:headless": "playwright test",
     "test:ui": "playwright test --ui",
     "test:debug": "playwright test --debug"
   },

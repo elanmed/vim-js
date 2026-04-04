@@ -28,6 +28,7 @@ test.describe("vim-js extension", () => {
     context = await chromium.launchPersistentContext(userDataDir, {
       headless: false,
       args: [
+        `--headless=new`,
         `--disable-extensions-except=${extensionPath}`,
         `--load-extension=${extensionPath}`,
       ],
