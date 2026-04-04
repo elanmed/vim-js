@@ -23,6 +23,10 @@ window.addEventListener("__vimJsTestCommand", (event) => {
  * @param { "click" | "focus" } mode
  */
 function activateSeek(mode) {
+  if (isTypeableElement(document.activeElement)) {
+    document.activeElement.blur();
+  }
+
   seekMode = mode;
   addLabelElements();
   chrome.storage.local.set({ seekMode });
@@ -56,10 +60,6 @@ window.addEventListener("load", async () => {
     activateSeek(storedSeekMode);
   }
 });
-
-// window.addEventListener("beforeunload", () => {
-//   resetSeekLabelsAndKeys();
-// });
 
 window.addEventListener("keydown", async (event) => {
   if (isSeekActive()) {
@@ -575,6 +575,9 @@ function isEventTypeableChar(event) {
   return `${lowerCase}${upperCase}${numbers}${punc}`.includes(event.key);
 }
 
+/**
+ * @param {Element} element
+ */
 function isTypeableElement(element) {
   return (
     element.tagName === "INPUT" ||
