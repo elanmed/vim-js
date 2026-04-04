@@ -240,39 +240,6 @@ test.describe("vim-js extension", () => {
         );
         return labels.length > 0;
       }, {});
-    });
-
-    test("clicking label activates element", async () => {
-      await page.goto("https://elanmed.dev/");
-      await page.waitForLoadState("load");
-
-      await page.evaluate(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      });
-
-      await page.evaluate(() => {
-        window.__vimJsTest.sendCommand("toggle-label-click");
-      });
-      await page.waitForFunction(
-        () =>
-          document.querySelectorAll('span[style*="position: fixed"]').length ===
-          0,
-        {},
-      );
-
-      await page.evaluate(() => {
-        window.__vimJsTest.sendCommand("toggle-label-click");
-      });
-
-      await page.waitForFunction(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      }, {});
 
       const labelText = await page.evaluate(() => {
         const labels = document.querySelectorAll(
@@ -324,31 +291,6 @@ test.describe("vim-js extension", () => {
       await page.evaluate(() => {
         window.__vimJsTest.sendCommand("toggle-label-focus");
       });
-
-      await page.waitForFunction(() => {
-        const labels = document.querySelectorAll(
-          'span[style*="position: fixed"]',
-        );
-        return labels.length > 0;
-      }, {});
-    });
-
-    test("focusing label scrolls to element", async () => {
-      await page.goto("https://elanmed.dev/");
-      await page.waitForLoadState("load");
-
-      await page.evaluate(() => {
-        const scrollableDiv = document.createElement("div");
-        scrollableDiv.style.height = "200px";
-        scrollableDiv.style.overflow = "auto";
-        scrollableDiv.innerHTML = "<div style='height: 1000px'>Content</div>";
-        document.body.appendChild(scrollableDiv);
-      });
-
-      await page.evaluate(() => {
-        window.__vimJsTest.sendCommand("toggle-label-focus");
-      });
-      await page.waitForTimeout(DELAY);
 
       await page.waitForFunction(() => {
         const labels = document.querySelectorAll(
@@ -506,23 +448,7 @@ test.describe("vim-js extension", () => {
   });
 
   test.describe("history navigation", () => {
-    test("Ctrl+O goes back in history", async () => {
-      const freshPage = await context.newPage();
-      await setupPage(freshPage);
-
-      await freshPage.goto("https://elanmed.dev/");
-      await freshPage.waitForLoadState("load");
-      await freshPage.goto("https://elanmed.dev/bonus");
-      await freshPage.waitForLoadState("load");
-
-      await freshPage.evaluate(() => {
-        window.__vimJsTest.sendCommand("history-back");
-      });
-
-      await freshPage.waitForURL("https://elanmed.dev/");
-    });
-
-    test("Ctrl+I goes forward in history", async () => {
+    test("Ctrl+O goes back in history, Ctrl+I forward", async () => {
       const freshPage = await context.newPage();
       await setupPage(freshPage);
 
