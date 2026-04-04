@@ -23,8 +23,9 @@ window.addEventListener("__vimJsTestCommand", (event) => {
  * @param { "click" | "focus" } mode
  */
 function activateSeek(mode) {
-  if (isTypeableElement(document.activeElement)) {
-    document.activeElement.blur();
+  const deepActive = getDeepActiveElement();
+  if (isTypeableElement(deepActive)) {
+    deepActive.blur();
   }
 
   seekMode = mode;
@@ -573,6 +574,15 @@ function isEventTypeableChar(event) {
   const numbers = "0123456789";
   const punc = "`~!@#$%^&*()-=_+[]{};':\",./<>?";
   return `${lowerCase}${upperCase}${numbers}${punc}`.includes(event.key);
+}
+
+/**
+ * @param {Document | ShadowRoot} root
+ * @returns {Element | null}
+ */
+function getDeepActiveElement(root = document) {
+  const active = root.activeElement;
+  return active?.shadowRoot ? getDeepActiveElement(active.shadowRoot) : active;
 }
 
 /**
