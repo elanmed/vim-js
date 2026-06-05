@@ -636,4 +636,3 @@ function simulateClick(element) {
     element.dispatchEvent(new EventConstructor(type, eventInit));
   }
 }
-
