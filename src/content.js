@@ -2,18 +2,21 @@ const extension = typeof browser === "undefined" ? chrome : browser;
 
 const labels = genLabels();
 
-let contentKeymaps = null;
-
-const activeToasts = [];
-
-let recordedKeyEvents = [];
-let recordingTimeout = null;
-
-let scrollPageCallback = null;
-let seekMode = "off";
-let seekFirstLabelKey = null;
-let seekSecondLabelKey = null;
-let seekLabels = [];
+const state = {
+  activeToasts: [],
+  contentKeymaps: null,
+  recording: {
+    keyEvents: [],
+    timeout: null,
+  },
+  scrollPageCallback: null,
+  seek: {
+    mode: "off",
+    firstLabelKey: null,
+    secondLabelKey: null,
+    labels: [],
+  },
+};
 
 window.addEventListener("__vimJsTestCommand", (event) => {
   extension.runtime.sendMessage({ action: event.detail.action });
@@ -23,27 +26,27 @@ window.addEventListener("__vimJsTestCommand", (event) => {
  * @param { "click" | "focus" } mode
  */
 function activateSeek(mode) {
-  seekMode = mode;
+  state.seek.mode = mode;
   addLabelElements();
-  chrome.storage.local.set({ seekMode });
+  chrome.storage.local.set({ seekMode: state.seek.mode });
 }
 
 function deactivateSeek() {
   resetSeekLabelsAndKeys();
-  seekMode = "off";
+  state.seek.mode = "off";
   chrome.storage.local.set({ seekMode: "off" });
 }
 
 function isSeekActive() {
-  return seekMode === "focus" || seekMode === "click";
+  return state.seek.mode === "focus" || state.seek.mode === "click";
 }
 
 function resetSeekLabelsAndKeys() {
-  seekFirstLabelKey = null;
-  seekSecondLabelKey = null;
+  state.seek.firstLabelKey = null;
+  state.seek.secondLabelKey = null;
 
   removeLabelElements();
-  seekLabels = [];
+  state.seek.labels = [];
 }
 
 window.addEventListener("scroll", () => resetSeekLabelsAndKeys());
@@ -75,38 +78,38 @@ window.addEventListener("keydown", async (event) => {
     return;
   }
 
-  if (!contentKeymaps) {
-    contentKeymaps = await getContentKeymaps();
+  if (!state.contentKeymaps) {
+    state.contentKeymaps = await getContentKeymaps();
   }
-  const multiKeyKeymaps = contentKeymaps.filter((keymap) =>
+  const multiKeyKeymaps = state.contentKeymaps.filter((keymap) =>
     Array.isArray(keymap),
   );
-  const singleKeyKeymaps = contentKeymaps.filter(
+  const singleKeyKeymaps = state.contentKeymaps.filter(
     (keymap) => !Array.isArray(keymap),
   );
 
-  recordedKeyEvents.push(event);
-  clearTimeout(recordingTimeout);
+  state.recording.keyEvents.push(event);
+  clearTimeout(state.recording.timeout);
 
   const matchedSubsetMultiKeyKeymap = multiKeyKeymaps.find((keymapArr) => {
-    if (recordedKeyEvents.length > keymapArr.length) return false;
-    return recordedKeyEvents.every((previousKeyEvent, idx) =>
+    if (state.recording.keyEvents.length > keymapArr.length) return false;
+    return state.recording.keyEvents.every((previousKeyEvent, idx) =>
       isSameKey(keymapArr[idx], previousKeyEvent),
     );
   });
   const isSubsetOfMultiKeyKeymap =
     matchedSubsetMultiKeyKeymap &&
-    recordedKeyEvents.length < matchedSubsetMultiKeyKeymap.length;
+    state.recording.keyEvents.length < matchedSubsetMultiKeyKeymap.length;
 
   if (matchedSubsetMultiKeyKeymap) {
     event.preventDefault();
 
     if (isSubsetOfMultiKeyKeymap) {
-      recordingTimeout = setTimeout(() => {
+      state.recording.timeout = setTimeout(() => {
         addToast(
-          `Clearing recorded keys: ${recordedKeyEvents.map((keyEvent) => keyEvent.key)}`,
+          `Clearing recorded keys: ${state.recording.keyEvents.map((keyEvent) => keyEvent.key)}`,
         );
-        recordedKeyEvents = [];
+        state.recording.keyEvents = [];
       }, 2000);
       return;
     }
@@ -114,9 +117,9 @@ window.addEventListener("keydown", async (event) => {
     const { command } = matchedSubsetMultiKeyKeymap.at(-1);
     extension.runtime.sendMessage({ action: command });
 
-    recordedKeyEvents = [];
+    state.recording.keyEvents = [];
   } else {
-    recordedKeyEvents = [];
+    state.recording.keyEvents = [];
     const matchingKeymap = singleKeyKeymaps.find((keymap) =>
       isSameKey(keymap, event),
     );
@@ -222,7 +225,7 @@ function addToast(message) {
   toast.textContent = message;
   const styles = {
     position: "fixed",
-    bottom: `${20 + activeToasts.length * 60}px`,
+    bottom: `${20 + state.activeToasts.length * 60}px`,
     right: "20px",
     background: "black",
     color: "white",
@@ -236,16 +239,16 @@ function addToast(message) {
     toast.style[property] = value;
   }
   document.body.appendChild(toast);
-  activeToasts.push(toast);
+  state.activeToasts.push(toast);
 
   setTimeout(() => {
-    const toastIndex = activeToasts.indexOf(toast);
+    const toastIndex = state.activeToasts.indexOf(toast);
     if (toastIndex === -1) return;
 
-    activeToasts.splice(toastIndex, 1);
+    state.activeToasts.splice(toastIndex, 1);
     toast.remove();
 
-    activeToasts.forEach((toast, index) => {
+    state.activeToasts.forEach((toast, index) => {
       toast.style.bottom = `${20 + index * 60}px`;
     });
   }, 2000);
@@ -255,17 +258,17 @@ function addToast(message) {
  * @param {KeyboardEvent} event
  */
 function handleSeek(event) {
-  if (seekFirstLabelKey) {
-    const selectedLabelText = seekFirstLabelKey.concat(event.key);
-    const selectedLabel = seekLabels.find(
+  if (state.seek.firstLabelKey) {
+    const selectedLabelText = state.seek.firstLabelKey.concat(event.key);
+    const selectedLabel = state.seek.labels.find(
       ({ labelText }) => labelText === selectedLabelText,
     );
     if (!selectedLabel) {
       addToast("Invalid label");
-      seekFirstLabelKey = null;
+      state.seek.firstLabelKey = null;
       return;
     }
-    seekSecondLabelKey = event.key;
+    state.seek.secondLabelKey = event.key;
 
     let observerTimeout = null;
     const domObserver = new MutationObserver((_mutationList, observer) => {
@@ -288,7 +291,7 @@ function handleSeek(event) {
     });
 
     selectedLabel.labeledElement.focus();
-    if (seekMode === "click") {
+    if (state.seek.mode === "click") {
       simulateClick(selectedLabel.labeledElement);
 
       if (isTypeableElement(selectedLabel.labeledElement)) {
@@ -301,29 +304,29 @@ function handleSeek(event) {
       }
     }
 
-    if (seekMode === "focus") {
+    if (state.seek.mode === "focus") {
       const scrollableParent = getFirstScrollableParent(document.activeElement);
-      if (scrollableParent && scrollPageCallback) {
-        scrollPageCallback(scrollableParent);
-        scrollPageCallback = null;
+      if (scrollableParent && state.scrollPageCallback) {
+        state.scrollPageCallback(scrollableParent);
+        state.scrollPageCallback = null;
       }
       deactivateSeek();
       return;
     }
   } else {
-    const labelTexts = seekLabels.map(({ labelText }) => labelText);
+    const labelTexts = state.seek.labels.map(({ labelText }) => labelText);
     if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
       addToast("Invalid label");
       return;
     }
-    seekFirstLabelKey = event.key;
+    state.seek.firstLabelKey = event.key;
   }
 }
 
 function addLabelElements() {
   const baseElement = getModalElement() ?? document;
   let elementsToLabel;
-  if (seekMode === "click") {
+  if (state.seek.mode === "click") {
     const clickableSelectors = [
       "a",
       "button",
@@ -372,7 +375,7 @@ function addLabelElements() {
   }
 
   if (elementsToLabel.length === 1) {
-    addToast(`No elements to ${seekMode}`);
+    addToast(`No elements to ${state.seek.mode}`);
     return deactivateSeek();
   }
 
@@ -393,11 +396,11 @@ function addLabelElements() {
     const fontSize = computedStyle.fontSize;
 
     const labelElement = document.createElement("span");
-    seekLabels.push({ labelElement, labeledElement, labelText });
+    state.seek.labels.push({ labelElement, labeledElement, labelText });
     labelElement.textContent = labelText;
     const styles = {
       lineHeight: "1",
-      background: seekMode === "click" ? "gold" : "lightgreen",
+      background: state.seek.mode === "click" ? "gold" : "lightgreen",
       color: "black",
       padding: "2px",
       opacity: "0.90",
@@ -420,7 +423,7 @@ function addLabelElements() {
 }
 
 function removeLabelElements() {
-  seekLabels.forEach(({ labelElement }) => {
+  state.seek.labels.forEach(({ labelElement }) => {
     labelElement.remove();
   });
 }
@@ -511,7 +514,7 @@ function getFirstScrollableParent(element) {
  * @param {(element: Element) => void} callback
  */
 function scrollPage(callback) {
-  scrollPageCallback = callback;
+  state.scrollPageCallback = callback;
 
   if (isSeekActive()) {
     deactivateSeek();
@@ -523,7 +526,7 @@ function scrollPage(callback) {
     const scrollableChild = getFirstScrollableChild(modalElement);
     if (scrollableChild) {
       callback(scrollableChild);
-      scrollPageCallback = null;
+      state.scrollPageCallback = null;
     }
     return;
   }
@@ -531,7 +534,7 @@ function scrollPage(callback) {
   const scrollableParent = getFirstScrollableParent(document.activeElement);
   if (scrollableParent) {
     callback(scrollableParent);
-    scrollPageCallback = null;
+    state.scrollPageCallback = null;
     return;
   }
 
