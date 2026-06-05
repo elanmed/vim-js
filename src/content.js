@@ -23,11 +23,6 @@ window.addEventListener("__vimJsTestCommand", (event) => {
  * @param { "click" | "focus" } mode
  */
 function activateSeek(mode) {
-  const deepActive = getDeepActiveElement();
-  if (isTypeableElement(deepActive)) {
-    deepActive.blur();
-  }
-
   seekMode = mode;
   addLabelElements();
   chrome.storage.local.set({ seekMode });
@@ -315,14 +310,14 @@ function handleSeek(event) {
       deactivateSeek();
       return;
     }
+  } else {
+    const labelTexts = seekLabels.map(({ labelText }) => labelText);
+    if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
+      addToast("Invalid label");
+      return;
+    }
+    seekFirstLabelKey = event.key;
   }
-
-  const labelTexts = seekLabels.map(({ labelText }) => labelText);
-  if (!labelTexts.some((labelText) => labelText.startsWith(event.key))) {
-    addToast("Invalid label");
-    return;
-  }
-  seekFirstLabelKey = event.key;
 }
 
 function addLabelElements() {
@@ -574,15 +569,6 @@ function isEventTypeableChar(event) {
   const numbers = "0123456789";
   const punc = "`~!@#$%^&*()-=_+[]{};':\",./<>?";
   return `${lowerCase}${upperCase}${numbers}${punc}`.includes(event.key);
-}
-
-/**
- * @param {Document | ShadowRoot} root
- * @returns {Element | null}
- */
-function getDeepActiveElement(root = document) {
-  const active = root.activeElement;
-  return active?.shadowRoot ? getDeepActiveElement(active.shadowRoot) : active;
 }
 
 /**
