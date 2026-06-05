@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "A minimalist vimium",
   "scripts": {
-    "install-deps": "npm install && npx playwright install && npx playwright install-deps",
+    "install-deps": "pnpm install && pnpm exec playwright install && pnpm exec playwright install-deps",
     "gen-manifest": "node manifest/gen-manifest.js",
     "test": "playwright test",
     "test:headless": "playwright test",
