@@ -1,0 +1,4 @@
+blockExoticSubdeps: true
+minimumReleaseAge: 10080,
+minimumReleaseAgeExclude:
+  - fsevents
